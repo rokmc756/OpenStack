@@ -47,8 +47,8 @@
     - { regexp: "^CONFIG_CINDER_SOLIDFIRE_PASSWORD=*",          line: "CONFIG_CINDER_SOLIDFIRE_PASSWORD=changeme", state: present }
     - { regexp: "^CONFIG_MANILA_NETAPP_PASSWORD=*",             line: "CONFIG_MANILA_NETAPP_PASSWORD=changeme", state: present }
     - { regexp: "^CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=*",   line: "CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=changeme", state: present }
-    - { regexp: "^CONFIG_HEAT_DOMAIN_PASSWORD=*",               line: "CONFIG_HEAT_DOMAIN_PASSWORD=changeme", state: present }
-
+    - { regexp: "^CONFIG_HEAT_DOMAIN_PASSWORD=*",               line: "CONFIG_HEAT_DOMAIN_PASSWORD=changeme",    state: present }
+    - { regexp: "^CONFIG_CINDER_VOLUMES_SIZE=*",                line: "CONFIG_CINDER_VOLUMES_SIZE=10G",     state: present }
 
 #
 #CONFIG_MARIADB_HOST=

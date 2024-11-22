@@ -44,19 +44,9 @@
     state: absent
 
 
-# https://www.rdoproject.org/deliverables/repos/
-#- name: Install RDO Package Repository
-#  dnf:
-#    name: http://trunk.rdoproject.org/rdo_release/rdo-release.el9s.rpm
-#    state: present
-#    disable_gpg_check: true
-#    # name: https://www.rdoproject.org/repos/rdo-release.el9.rpm
-
-
 # Upgrade packages to latest version
 #- name: Update All Packages
 #  package: name=* state=latest update_cache=yes
-
 
 
 ### For example of CentOS Stream 9
@@ -70,10 +60,8 @@
 
 - name: Enable Openstack Repository
   dnf:
-    name: "{{ item }}"
+    name: "centos-release-openstack-{{ rdo.project_release }}"
     state: present
-  with_items:
-    - centos-release-openstack-bobcat
 
 
 - name: Install Openstack Packstack
@@ -87,6 +75,7 @@
     - python3-openstackclient
     - openstack-selinux
   #  - python-gpid-proton
+
 
 - name: Install Openstack Sysinit Network Scripts
   dnf:
@@ -111,7 +100,6 @@
 
 - name: Enable Sysinit Network
   service: name=network enabled=yes
-  # service: name=network state=started enabled=yes
 
 
 - name: Disable NetworkManager

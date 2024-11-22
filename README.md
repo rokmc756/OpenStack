@@ -21,6 +21,16 @@
 * Script
   - https://github.com/electrocucaracha/openstack-multinode
 
+* BareMetal
+  - https://docs.openstack.org/ironic/rocky/install/index.html
+
+* Openstack Packages for RHEL and CentOS
+  - https://docs.openstack.org/install-guide/environment-packages-rdo.html
+
+* Prepare CentOS Server for RDO
+  - https://platform9.com/docs/openstack-docs/openstack/preparing-centos-preparing-centos-server-for-neutron
+
+
 
 [ Packstack Deploy Error ]
 ~~~

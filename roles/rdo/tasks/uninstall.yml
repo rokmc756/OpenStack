@@ -8,6 +8,8 @@
   ignore_errors: true
   with_items:
     - "uninstall-rdo.sh"
+    - "remove-el9s-pkgs.sh"
+
 - debug: msg={{ copy_uninstall_rdo_script }}
 
 
@@ -20,25 +22,20 @@
     executable: /bin/bash
 
 
-# 1
 - name: Enable SELinux Policy
   import_tasks: enable-selinux.yml
 
 
-# 2
 - name: Enable NetworkManager
   service: name=NetworkManager enabled=yes
   ignore_errors: true
 
 
-# 3
 - name: Disable Sysinit Network
   service: name=network enabled=no
   ignore_errors: true
-  # service: name=network state=started enabled=yes
 
 
-# 4
 - name: Delete Sysinit Network Scripts
   become_user: root
   file:
@@ -53,7 +50,6 @@
 - debug: msg={{ delete_sysinit_network_scripts }}
 
 
-# 5
 - name: Uninstall Openstack Sysinit Network Scripts
   package:
     name: openstack-network-scripts
@@ -62,7 +58,6 @@
   # name: network-scripts
 
 
-# 6
 - name: Uninstall Openstack Packstack
   package:
     name: "{{ item }}"
@@ -71,7 +66,7 @@
   with_items:
     - python3-gpid-proton
 
-# 6
+
 - name: Uninstall Openstack Packstack
   package:
     name: "{{ item }}"
@@ -88,7 +83,6 @@
   ignore_errors: true
 
 
-# 6
 - name: Uninstall Openstack Packstack
   package:
     name: "{{ item }}"
@@ -98,7 +92,6 @@
     - openstack-packstack
 
 
-# 7
 # Upgrade packages to latest version
 #- name: Update All Packages
 #  package: name=* state=latest update_cache=yes
@@ -114,61 +107,30 @@
     - python3-openstackclient
 
 
-# 8
-# https://www.rdoproject.org/deliverables/repos/
-#- name: Uninstall RDO Repository Package
-#  shell: |
-#    yum remove -y rdo-release-dalmatian
-#  ignore_errors: true
-
-
-- name: Disable Openstack Repository
+- name: Disable and Uninstall Openstack Repository
   dnf:
-    name: "{{ item }}"
+    name: "centos-release-openstack-{{ rdo.project_release }}"
     state: absent
   ignore_errors: true
-  with_items:
-    - centos-release-openstack-bobcat
 
 
-# 9
-#- name: Install Ansible
-#  package:
-#    name: ansible
-#    state: present
-
-
-# 10
-# https://centlinux.com/enable-powertools-repository/
 - name: Ensure the CRB Repository is Disable for Rocky Instead of Powertools Provided by Red hat
   shell: dnf config-manager --disable crb
   ignore_errors: true
 
 
-# 11
 - name: Start Firewalld
   service: name=firewalld state=started enabled=no
   ignore_errors: true
 
 
-# 12
-#- name: Configure Language Pack
-#  lineinfile:
-#    path: /etc/environment
-#    line: "{{ item }}"
-#    state: present
-#  ignore_errors: true
-#  with_items:
-#    - "LANG=en_US.utf-8"
-#    - "LC_ALL=en_US.utf-8"
-
-
-# 13
-#- name: Uninstall Language Pack
-#  package: name={{ item }} state=absent
-#  ignore_errors: true
-#  with_items:
-#   - glibc-langpack-en
+- name: Remove EL9s RDO Packages Remained
+  shell: |
+    ./remove-el9s-pkgs.sh
+  ignore_errors: true
+  args:
+    chdir: /root/rdo-scripts
+    executable: /bin/bash
 
 
 - name: Reboot Required
