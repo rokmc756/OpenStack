@@ -1,0 +1,32 @@
+rdo_config_pass:
+  - { regexp: "^CONFIG_SSH_KEY=*",                line: "CONFIG_SSH_KEY=/root/.ssh/id_rsa.pub",               state: present }
+  - { regexp: "^CONFIG_DEFAULT_PASSWORD=*",       line: "CONFIG_DEFAULT_PASSWORD=changeme",                   state: present }
+  - { regexp: "^CONFIG_DEFAULT_PASSWORD=*",       line: "CONFIG_DEFAULT_PASSWORD=changeme", state: present }
+  - { regexp: "^CONFIG_VCENTER_PASSWORD=*",       line: "CONFIG_VCENTER_PASSWORD=changeme", state: present }
+  - { regexp: "^CONFIG_AMQP_AUTH_PASSWORD=*",                 line: "CONFIG_AMQP_AUTH_PASSWORD=changeme", state: present }
+  - { regexp: "^CONFIG_KEYSTONE_LDAP_USER_PASSWORD=*",        line: "CONFIG_KEYSTONE_LDAP_USER_PASSWORD=changeme", state: present }
+  - { regexp: "^CONFIG_CINDER_NETAPP_PASSWORD=*",             line: "CONFIG_CINDER_NETAPP_PASSWORD=changeme", state: present }
+  - { regexp: "^CONFIG_CINDER_NETAPP_SA_PASSWORD=*",          line: "CONFIG_CINDER_NETAPP_SA_PASSWORD=changeme", state: present }
+  - { regexp: "^CONFIG_CINDER_SOLIDFIRE_PASSWORD=*",          line: "CONFIG_CINDER_SOLIDFIRE_PASSWORD=changeme", state: present }
+  - { regexp: "^CONFIG_MANILA_NETAPP_PASSWORD=*",             line: "CONFIG_MANILA_NETAPP_PASSWORD=changeme", state: present }
+  - { regexp: "^CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=*",   line: "CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=changeme", state: present }
+  - { regexp: "^CONFIG_HEAT_DOMAIN_PASSWORD=*",               line: "CONFIG_HEAT_DOMAIN_PASSWORD=changeme", state: present }
+
+
+rdo_single_node:
+  - { regexp: "^CONFIG_CONTROLLER_HOST=*",        line: "CONFIG_CONTROLLER_HOST={{ control_node_ipaddr }} ",  state: present }
+  - { regexp: "^CONFIG_COMPUTE_HOSTS=*",          line: "CONFIG_COMPUTE_HOSTS={{ control_node_ipaddr }}",     state: present }
+  - { regexp: "^CONFIG_NETWORK_HOSTS=*",          line: "CONFIG_NETWORK_HOSTS={{ control_node_ipaddr }}",     state: present }
+  - { regexp: "^CONFIG_STORAGE_HOST=*",           line: "CONFIG_STORAGE_HOST={{ control_node_ipaddr }}",      state: present }
+  - { regexp: "^CONFIG_AMQP_HOST=*",              line: "CONFIG_AMQP_HOST={{ control_node_ipaddr }}",         state: present }
+  - { regexp: "^CONFIG_REDIS_HOST=*",             line: "CONFIG_REDIS_HOST={{ control_node_ipaddr }}",        state: present }
+
+
+rdo_multi_node:
+  - { regexp: "^CONFIG_CONTROLLER_HOST=*",        line: "CONFIG_CONTROLLER_HOST={{ control_node_ipaddr }} ",  state: present }
+  - { regexp: "^CONFIG_COMPUTE_HOSTS=*",          line: "CONFIG_COMPUTE_HOSTS={{ compute_node_ipaddr }}",     state: present }
+  - { regexp: "^CONFIG_NETWORK_HOSTS=*",          line: "CONFIG_NETWORK_HOSTS={{ network_node_ipaddr }}",     state: present }
+  - { regexp: "^CONFIG_STORAGE_HOST=*",           line: "CONFIG_STORAGE_HOST={{ storage_node_ipaddr }}",      state: present }
+  - { regexp: "^CONFIG_AMQP_HOST=*",              line: "CONFIG_AMQP_HOST={{ storage_node_ipaddr }}",         state: present }
+  - { regexp: "^CONFIG_REDIS_HOST=*",             line: "CONFIG_REDIS_HOST={{ storage_node_ipaddr }}",        state: present }
+

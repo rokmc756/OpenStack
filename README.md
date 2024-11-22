@@ -21,3 +21,27 @@
 * Script
   - https://github.com/electrocucaracha/openstack-multinode
 
+
+[ Packstack Deploy Error ]
+~~~
+[root@rk9-node01 rdo-scripts]# dnf install openstack-neutron-common
+Last metadata expiration check: 0:51:59 ago on Fri 22 Nov 2024 08:36:43 PM KST.
+Error:
+ Problem: package python3-neutron-1:25.0.0-2.el9s.noarch from openstack-dalmatian requires python3.9dist(ovsdbapp) >= 2.7.1, but none of the providers can be installed
+  - package openstack-neutron-common-1:25.0.0-2.el9s.noarch from openstack-dalmatian requires python3-neutron = 1:25.0.0-2.el9s, but none of the providers can be installed
+  - package python3-ovsdbapp-2.8.0-1.el9s.noarch from openstack-dalmatian requires python3-openvswitch, but none of the providers can be installed
+  - conflicting requests
+  - package python3-rdo-openvswitch-2:3.3-1.el9s.noarch from openstack-dalmatian is filtered out by exclude filtering
+(try to add '--skip-broken' to skip uninstallable packages or '--nobest' to use not only best candidate packages)
+
+[root@rk9-node01 rdo-scripts]# /usr/bin/dnf install openstack-neutron
+Last metadata expiration check: 0:53:09 ago on Fri 22 Nov 2024 08:36:43 PM KST.
+Error:
+ Problem: package openstack-neutron-common-1:25.0.0-2.el9s.noarch from openstack-dalmatian requires python3-neutron = 1:25.0.0-2.el9s, but none of the providers can be installed
+  - package python3-neutron-1:25.0.0-2.el9s.noarch from openstack-dalmatian requires python3.9dist(ovsdbapp) >= 2.7.1, but none of the providers can be installed
+  - package openstack-neutron-1:25.0.0-2.el9s.noarch from openstack-dalmatian requires openstack-neutron-common = 1:25.0.0-2.el9s, but none of the providers can be installed
+  - package python3-ovsdbapp-2.8.0-1.el9s.noarch from openstack-dalmatian requires python3-openvswitch, but none of the providers can be installed
+  - conflicting requests
+  - package python3-rdo-openvswitch-2:3.3-1.el9s.noarch from openstack-dalmatian is filtered out by exclude filtering
+(try to add '--skip-broken' to skip uninstallable packages or '--nobest' to use not only best candidate packages)
+~~~

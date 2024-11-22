@@ -1,0 +1,136 @@
+---
+- name: Install Language Pack
+  package: name={{item}} state=present
+  with_items:
+   - glibc-langpack-en
+   - dnf-plugins-core
+
+
+- name: Configure Language Pack
+  lineinfile:
+    path: /etc/environment
+    line: "{{ item }}"
+    state: present
+  with_items:
+    - "LANG=en_US.utf-8"
+    - "LC_ALL=en_US.utf-8"
+
+
+- name: Stop Firewalld
+  service: name=firewalld state=stopped enabled=no
+
+
+# What is PowerTools Repo?
+# PowerTools repository is a YUM (Yellowdog Updater Modified) repository available in some Linux distributions like CentOS, RHEL (Red Hat Enterprise Linux),
+# and Oracle Linux. It contains additional software packages and dependencies that are not included in the main distribution repositories, but may be needed
+# for certain tasks or applications.
+# The PowerTools repository provides access to development tools, libraries, and additional software packages that may be required by software developers,
+# system administrators, or power users. These packages may not be officially supported by the Linux distribution vendor, but are considered to be stable 
+# and reliable by the community.
+#
+# What is CRB Repo?
+# CRB is “Code Ready Builder” – PowerTools was a carryover from CentOS, which is still the equivalent of CRB in RHEL. CRB will be the repository name going
+# forward in Rocky Linux and other derivatives starting with version 9. Rocky Linux 8 matches CentOS’s use of PowerTools in order to be as compatible as possible
+# with what users expect from a rebuild of version 8. (Source: rockylinux.org)
+
+# https://centlinux.com/enable-powertools-repository/
+- name: Ensure the CRB Repository is Enabled for Rocky Instead of Powertools Provided by Red hat
+  shell: dnf config-manager --enable crb
+
+
+- name: Uninstall Ansible
+  package:
+    name: ansible
+    state: absent
+
+
+# https://www.rdoproject.org/deliverables/repos/
+#- name: Install RDO Package Repository
+#  dnf:
+#    name: http://trunk.rdoproject.org/rdo_release/rdo-release.el9s.rpm
+#    state: present
+#    disable_gpg_check: true
+#    # name: https://www.rdoproject.org/repos/rdo-release.el9.rpm
+
+
+# Upgrade packages to latest version
+#- name: Update All Packages
+#  package: name=* state=latest update_cache=yes
+
+
+
+### For example of CentOS Stream 9
+### Zed
+# dnf install centos-release-openstack-zed
+### 2023.1 Antelope
+# dnf install centos-release-openstack-antelope
+### 2023.2 Bobcat
+# dnf install centos-release-openstack-bobcat
+
+
+- name: Enable Openstack Repository
+  dnf:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - centos-release-openstack-bobcat
+
+
+- name: Install Openstack Packstack
+  dnf:
+    name: "{{ item }}"
+    state: present
+  ignore_errors: true
+  with_items:
+    - openstack-packstack
+    - leatherman
+    - python3-openstackclient
+    - openstack-selinux
+  #  - python-gpid-proton
+
+- name: Install Openstack Sysinit Network Scripts
+  dnf:
+    name: openstack-network-scripts
+    state: present
+    # name: network-scripts
+
+
+- name: Configure IP Address with Sysinit Network Scripts
+  become_user: root
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/sysconfig/network-scripts/{{ item }}"
+    mode: 0644
+  register: configure_sysinit_network_scripts
+  with_items:
+    - "ifcfg-ens192"
+    - "ifcfg-ens224"
+    - "ifcfg-ens256"
+- debug: msg={{ configure_sysinit_network_scripts }}
+
+
+- name: Enable Sysinit Network
+  service: name=network enabled=yes
+  # service: name=network state=started enabled=yes
+
+
+- name: Disable NetworkManager
+  service: name=NetworkManager enabled=no
+
+
+- name: Disable SELinux Policy
+  import_tasks: disable-selinux.yml
+
+
+- name: Reboot Required
+  shell: ( /bin/sleep 5; /sbin/shutdown -r now "Ansible updates triggered" ) &
+  ignore_errors: true
+  register: reboot_required
+  async: 120
+  poll: 0
+  notify:
+    - Waiting for Server to Come Back After Reboot
+
+
+- meta: flush_handlers
+

@@ -1,0 +1,126 @@
+---
+- name: Create an Empty File for RDO Sysctl Parameters
+  copy:
+    content: ""
+    dest: /etc/sysctl.d/99-sysctl-rdo.conf
+    force: no
+
+
+- name: Configure Sysctl Parameters for Cindor or Celomiter?
+  lineinfile:
+    path: /etc/sysctl.d/99-sysctl-rdo.conf
+    line: "{{ item }}"
+  with_items:
+    - "vm.overcommit_memory = 1"
+
+
+- name: Apply sysctl parameters
+  command: sysctl --system
+
+
+- name: Generate RDO the answer file
+  shell: packstack --gen-answer-file=/root/rdo-scripts/rdo-answer.txt
+  ignore_errors: yes
+
+
+- name: Replace all IPs with the IP available for access to the dashboard
+  lineinfile:
+    dest: /root/rdo-scripts/rdo-answer.txt
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: "{{ item.state }}"
+  with_items:
+    - { regexp: "^CONFIG_SSH_KEY=*",                line: "CONFIG_SSH_KEY=/root/.ssh/id_rsa.pub",               state: present }
+    - { regexp: "^CONFIG_DEFAULT_PASSWORD=*",       line: "CONFIG_DEFAULT_PASSWORD=changeme",                   state: present }
+    - { regexp: "^CONFIG_CONTROLLER_HOST=*",        line: "CONFIG_CONTROLLER_HOST={{ control_node_ipaddr }} ",  state: present }
+    - { regexp: "^CONFIG_COMPUTE_HOSTS=*",          line: "CONFIG_COMPUTE_HOSTS={{ control_node_ipaddr }}",     state: present }
+    - { regexp: "^CONFIG_NETWORK_HOSTS=*",          line: "CONFIG_NETWORK_HOSTS={{ control_node_ipaddr }}",     state: present }
+    - { regexp: "^CONFIG_STORAGE_HOST=*",           line: "CONFIG_STORAGE_HOST={{ control_node_ipaddr }}",      state: present }
+    - { regexp: "^CONFIG_AMQP_HOST=*",              line: "CONFIG_AMQP_HOST={{ control_node_ipaddr }}",         state: present }
+    - { regexp: "^CONFIG_REDIS_HOST=*",             line: "CONFIG_REDIS_HOST={{ control_node_ipaddr }}",        state: present }
+    - { regexp: "^CONFIG_DEFAULT_PASSWORD=*",       line: "CONFIG_DEFAULT_PASSWORD=changeme", state: present }
+    - { regexp: "^CONFIG_VCENTER_PASSWORD=*",       line: "CONFIG_VCENTER_PASSWORD=changeme", state: present }
+    - { regexp: "^CONFIG_AMQP_AUTH_PASSWORD=*",                 line: "CONFIG_AMQP_AUTH_PASSWORD=changeme", state: present }
+    - { regexp: "^CONFIG_KEYSTONE_LDAP_USER_PASSWORD=*",        line: "CONFIG_KEYSTONE_LDAP_USER_PASSWORD=changeme", state: present }
+    - { regexp: "^CONFIG_CINDER_NETAPP_PASSWORD=*",             line: "CONFIG_CINDER_NETAPP_PASSWORD=changeme", state: present }
+    - { regexp: "^CONFIG_CINDER_NETAPP_SA_PASSWORD=*",          line: "CONFIG_CINDER_NETAPP_SA_PASSWORD=changeme", state: present }
+    - { regexp: "^CONFIG_CINDER_SOLIDFIRE_PASSWORD=*",          line: "CONFIG_CINDER_SOLIDFIRE_PASSWORD=changeme", state: present }
+    - { regexp: "^CONFIG_MANILA_NETAPP_PASSWORD=*",             line: "CONFIG_MANILA_NETAPP_PASSWORD=changeme", state: present }
+    - { regexp: "^CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=*",   line: "CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=changeme", state: present }
+    - { regexp: "^CONFIG_HEAT_DOMAIN_PASSWORD=*",               line: "CONFIG_HEAT_DOMAIN_PASSWORD=changeme", state: present }
+
+
+#
+#CONFIG_MARIADB_HOST=
+#CONFIG_MARIADB_USER=root
+#CONFIG_MARIADB_PW=bfa277d321e14d63
+#
+#CONFIG_MARIADB_HOST=192.168.1.71
+#CONFIG_MARIADB_USER=root
+#CONFIG_MARIADB_PW=bfa277d321e14d63
+#
+#CONFIG_AMQP_AUTH_USER=amqp_user
+#
+#CONFIG_KEYSTONE_ADMIN_USERNAME=admin
+#
+#CONFIG_GNOCCHI_DB_PW=c071e5ef581d495a
+#CONFIG_GNOCCHI_KS_PW=ea26c857a7964dee
+
+
+
+    # - { regexp: "^CONFIG_MARIADB_HOST=*" ,     line: "CONFIG_MARIADB_HOST={{ control_node_ipaddr }}",      state: present }
+
+
+
+#    - { regexp: "^CONFIG_SSH_KEY=*",           line: "CONFIG_SSH_KEY=/root/.ssh/id_rsa.pub",               state: present }
+#    - { regexp: "^CONFIG_DEFAULT_PASSWORD=*",  line: "CONFIG_DEFAULT_PASSWORD=changeme",                   state: present }
+#    - { regexp: "^CONFIG_CONTROLLER_HOST=*",   line: "CONFIG_CONTROLLER_HOST={{ control_node_ipaddr }} ",  state: present }
+#    - { regexp: "^CONFIG_COMPUTE_HOSTS=*",     line: "CONFIG_COMPUTE_HOSTS={{ compute_node_ipaddr }}",     state: present }
+#    - { regexp: "^CONFIG_NETWORK_HOSTS=*",     line: "CONFIG_NETWORK_HOSTS={{ network_node_ipaddr }}",     state: present }
+#    - { regexp: "^CONFIG_STORAGE_HOST=*",      line: "CONFIG_STORAGE_HOST={{ storage_node_ipaddr }}",      state: present }
+#    - { regexp: "^CONFIG_AMQP_HOST=*",         line: "CONFIG_AMQP_HOST={{ control_node_ipaddr }}",         state: present }
+#    - { regexp: "^CONFIG_MARIADB_HOST=*" ,     line: "CONFIG_MARIADB_HOST={{ storage_node_ipaddr }}",      state: present }
+#    - { regexp: "^CONFIG_REDIS_HOST=*",        line: "CONFIG_REDIS_HOST={{ storage_node_ipaddr }}",        state: present }
+
+
+
+#CONFIG_CONTROLLER_HOST=192.168.1.71
+#CONFIG_COMPUTE_HOSTS=192.168.1.71
+#CONFIG_NETWORK_HOSTS=192.168.1.71
+#CONFIG_STORAGE_HOST=192.168.1.71
+#CONFIG_AMQP_HOST=192.168.1.71
+#CONFIG_MARIADB_HOST=192.168.1.71
+
+#CONFIG_CINDER_NETAPP_HOSTNAME=
+#CONFIG_CINDER_NETAPP_ESERIES_HOST_TYPE=linux_dm_mp
+## CONFIG_CINDER_NETAPP_TRANSPORT_TYPE, CONFIG_CINDER_NETAPP_HOSTNAME,
+## and CONFIG_CINDER_NETAPP_HOSTNAME options to create the URL used by
+#CONFIG_CINDER_SOLIDFIRE_HOSTNAME=
+#CONFIG_MANILA_NETAPP_SERVER_HOSTNAME=
+#CONFIG_TEMPEST_HOST=
+#CONFIG_REDIS_HOST=192.168.1.71
+
+
+#CONFIG_MARIADB_INSTALL=y
+#CONFIG_GLANCE_INSTALL=y
+#CONFIG_CINDER_INSTALL=y
+#CONFIG_NOVA_INSTALL=y
+#CONFIG_NEUTRON_INSTALL=y
+#CONFIG_HORIZON_INSTALL=y
+#CONFIG_SWIFT_INSTALL=y
+#CONFIG_CEILOMETER_INSTALL=y
+#CONFIG_AODH_INSTALL=y
+#CONFIG_CLIENT_INSTALL=y
+#CONFIG_RH_OPTIONAL=y
+#CONFIG_SSL_CACERT_SELFSIGN=y
+#CONFIG_CINDER_VOLUMES_CREATE=y
+#CONFIG_NOVA_MANAGE_FLAVORS=y
+#CONFIG_NEUTRON_METERING_AGENT_INSTALL=y
+#CONFIG_HEAT_CFN_INSTALL=y
+#CONFIG_PROVISION_DEMO=y
+#CONFIG_PROVISION_OVS_BRIDGE=y
+
+
+#- name: Run Packstack to deploy OpenStack
+#  shell: packstack --answer-file=/root/rdo-scripts/rdo-answer.txt
+

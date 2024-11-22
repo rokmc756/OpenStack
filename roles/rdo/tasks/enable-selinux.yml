@@ -1,0 +1,25 @@
+---
+- name: Set SELinux Permissive Mode
+  shell: |
+    setenforce 0
+    sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+  ignore_errors: true
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Rocky"
+
+
+#- name: Change SELinux Policy Required to Permissive
+#  selinux:
+#    state: permissive
+#  register: selinux_permissive
+#  failed_when: selinux_permissive.msg | default('ok', True) is not search('(^ok$|libselinux-python|(SELinux state changed))')
+#- debug: msg={{ selinux_permissive }}
+#  when: print_debug == true
+
+
+- name: Check if SELinux Have Been Permissive in Configurtion File
+  command: grep SELINUX /etc/selinux/config
+  register: sevalue
+  ignore_errors: true
+- debug: msg={{ sevalue }}
+  when: print_debug == true
+

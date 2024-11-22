@@ -1,0 +1,28 @@
+---
+- name: Check OS ( RDO )
+  fail: msg="Not a Red Hat based system!"
+  when: ansible_os_family != 'RedHat' or ansible_os_family != 'CentOS' or ansible_os_family != 'Rocky'
+
+
+- name: Set Facts for Package Name and List and Network Range
+  import_tasks: set-rdo-facts.yml
+  tags:
+    - prepare
+    - packstack
+    - uninstall
+
+
+- name: Prepare Environment
+  import_tasks: prepare-env.yml
+  tags: prepare
+
+
+- name: Run Packstack
+  import_tasks: run-packstack.yml
+  tags: packstack
+
+
+- name: Uninstall Packstack
+  import_tasks: uninstall.yml
+  tags: uninstall
+

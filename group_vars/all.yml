@@ -1,11 +1,11 @@
 ansible_ssh_pass: "changeme"
 ansible_become_pass: "changeme"
 
-k8s:
+rdo:
   # Rancher does not support higher than kubernetes 1.28.x versions currently
   # k8s version should be at least v1.25.0 for kpack and korifi
   # k8s version should be v1.24.17 for cf-for-k8s
-  cluster_name: jack-kr-k8s
+  cluster_name: jack-kr-rdo
   domain: "jtest.pivotal.io"
   major_version: "1"
   minor_version: "31"
@@ -15,7 +15,7 @@ k8s:
   download_url: ""
   download: false
   base_path: /root
-  host_num: "{{ groups['workers'] | length }}"
+  host_num: "{{ groups['all'] | length }}"
   net:
     type: "virtual"                # Or Physical
     gateway: "192.168.0.1"

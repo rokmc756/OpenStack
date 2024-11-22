@@ -1,0 +1,14 @@
+rdo:
+	@if [ "${r}" = "prepare" ]; then\
+		ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-rdo.yml --tags='prepare';\
+	elif [ "${r}" = "packstack" ]; then\
+		ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-rdo.yml --tags='packstack';\
+	elif [ "${r}" = "install" ]; then\
+		ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-rdo.yml --tags='install';\
+	elif [ "${r}" = "uninstall" ]; then\
+		ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-rdo.yml --tags='uninstall';\
+	else\
+		echo "No Actions for RDO";\
+		exit;\
+	fi
+
