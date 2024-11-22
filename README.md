@@ -30,6 +30,9 @@
 * Prepare CentOS Server for RDO
   - https://platform9.com/docs/openstack-docs/openstack/preparing-centos-preparing-centos-server-for-neutron
 
+* Packstack with All In One
+  - https://cloudee.tistory.com/7
+
 
 
 [ Packstack Deploy Error ]
