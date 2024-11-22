@@ -1,0 +1,54 @@
+---
+- name: Stop KeepAlived
+  systemd:
+    name: keepalived
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+
+
+- name: Uninstall KeepAlived Package
+  package:
+    name: keepalived
+    state: absent
+
+
+- name: Keepalived Configuration
+  become_user: root
+  file:
+    dest: /etc/keepalived/keepalived.conf
+    state: absent
+
+
+- name: Uninstall Email Notification Script
+  become: true
+  become_user: root
+  file:
+    path: "/etc/keepalived/email_notify.sh"
+    state: absent
+
+
+- name: Uninstall Check Script
+  become: true
+  become_user: root
+  file:
+    path: "/etc/keepalived/{{ keepalived_check_script_name }}.sh"
+    state: absent
+
+
+- when: keepalived_notifications_email | default(False)
+  block:
+  - name: Stop and disable postfix
+    become: true
+    systemd:
+      name: postfix
+      state: stopped
+      enabled: no
+
+
+  - name: Uninstall Postfix to Send Notifications
+    become: true
+    package:
+      name: ['postfix', 'mailutils']
+      state: absent
+

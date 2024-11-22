@@ -1,0 +1,10 @@
+---
+- name: Restart KeepAlived
+  # become: true
+  systemd: name=keepalived state=restarted
+
+
+- name: Restart Network
+  # become: true
+  systemd: name=network state=restart
+

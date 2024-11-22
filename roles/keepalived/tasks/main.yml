@@ -1,0 +1,30 @@
+---
+- name: Check OS ( KeepAlived )
+  fail: msg="Not a Red Hat based system!"
+  when: ansible_os_family != 'RedHat' or ansible_os_family != 'CentOS' or ansible_os_family != 'Rocky'
+
+
+- name: Set Facts for Packages Name and List and Network Range
+  import_tasks: set-keepalived-facts.yml
+  tags:
+    - install
+    - uninstall
+
+
+- name: Install Keepalived
+  import_tasks: install.yml
+  tags: install
+  when: inventory_hostname in groups['lb']
+
+
+- name: Uninstall Keepalived
+  import_tasks: uninstall.yml
+  tags: uninstall
+  when: inventory_hostname in groups['lb']
+
+
+- name: Upgrade Keepalived
+  import_tasks: upgrade.yml
+  tags: upgrade
+  when: inventory_hostname in groups['lb']
+
