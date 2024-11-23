@@ -33,6 +33,13 @@
 * Packstack with All In One
   - https://cloudee.tistory.com/7
 
+* Manual Install and Configure Openstack in Oracle@Solaris
+  - https://docs.oracle.com/cd/E65465_01/html/E57770/docinfo.html#scrolltoc
+
+* Multinode Openstack Using Packstack
+  - https://www.youtube.com/watch?v=DGf-ny25OAw
+  - https://www.linuxtechi.com/multiple-node-openstack-liberty-installation-on-centos-7-x/
+  - https://docs.napatech.com/r/Getting-Started-with-Napatech-Link-VirtualizationTM-Software/Installing-OpenStack-on-Multiple-Nodes-via-Packstack
 
 
 [ Packstack Deploy Error ]
@@ -58,3 +65,4 @@ Error:
   - package python3-rdo-openvswitch-2:3.3-1.el9s.noarch from openstack-dalmatian is filtered out by exclude filtering
 (try to add '--skip-broken' to skip uninstallable packages or '--nobest' to use not only best candidate packages)
 ~~~
+

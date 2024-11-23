@@ -35,33 +35,46 @@
 
 # https://centlinux.com/enable-powertools-repository/
 - name: Ensure the CRB Repository is Enabled for Rocky Instead of Powertools Provided by Red hat
-  shell: dnf config-manager --enable crb
+  shell: |
+    dnf config-manager --enable crb
+    dnf config-manager --enable epel
+    dnf config-manager --enable devel                 # Openstack Repository for Rocky Linux 9.x
 
 
-- name: Uninstall Ansible
-  package:
-    name: ansible
-    state: absent
+#- name: Uninstall Ansible
+#  package:
+#    name: ansible
+#    state: absent
+
+
+- name: Commented packages excluded for python3-neutron
+  replace:
+    path: /etc/dnf/dnf.conf
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.line }}"
+    backup: "{{ item.backup }}"
+  register: commented_packages_excluded
+  with_items:
+    - { regexp: "^exclude=", line: "#exclude=", state: present, backup: no }
+- debug: msg={{ commented_packages_excluded }}
 
 
 # Upgrade packages to latest version
-#- name: Update All Packages
-#  package: name=* state=latest update_cache=yes
+- name: Update All Packages
+  package: name=* state=latest update_cache=yes
 
 
 ### For example of CentOS Stream 9
-### Zed
-# dnf install centos-release-openstack-zed
-### 2023.1 Antelope
-# dnf install centos-release-openstack-antelope
-### 2023.2 Bobcat
-# dnf install centos-release-openstack-bobcat
+### Zed centos-release-openstack-zed
+### 2023.1 Antelope centos-release-openstack-antelope
+### 2023.2 Bobcat centos-release-openstack-bobcat
 
 
 - name: Enable Openstack Repository
   dnf:
     name: "centos-release-openstack-{{ rdo.project_release }}"
     state: present
+
 
 
 - name: Install Openstack Packstack
@@ -72,8 +85,10 @@
   with_items:
     - openstack-packstack
     - leatherman
-    - python3-openstackclient
-    - openstack-selinux
+
+  #  - openstack-selinux
+  #  - openstack-ansible-core
+  #  - python3-openstackclient
   #  - python-gpid-proton
 
 

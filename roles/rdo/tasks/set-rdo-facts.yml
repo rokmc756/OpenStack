@@ -13,6 +13,33 @@
     ipaddr2: "{{ hostvars[inventory_hostname]['ansible_'~netdev2].ipv4.address }}"
 
 
+- name: Define IP Address Group seperated by Comma for Control Node
+  set_fact:
+    control_ipaddrs: "{{ groups['control'] | map('extract', hostvars, ['ansible_'~ netdev1, 'ipv4', 'address']) | join(',') }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: True
+  with_items: "{{ groups['all'] }}"
+  when: inventory_hostname in groups['control']
+
+
+- name: Define IP Address Group seperated by Comma for Compute Node
+  set_fact:
+    compute_ipaddrs: "{{ groups['compute'] | map('extract', hostvars, ['ansible_'~ netdev1, 'ipv4', 'address']) | join(',') }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: True
+  with_items: "{{ groups['all'] }}"
+  when: inventory_hostname in groups['compute']
+
+
+- name: Define IP Address Group seperated by Comma for Network Node
+  set_fact:
+    network_ipaddrs: "{{ groups['control'] | map('extract', hostvars, ['ansible_'~ netdev1, 'ipv4', 'address']) | join(',') }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: True
+  with_items: "{{ groups['all'] }}"
+  when: inventory_hostname in groups['network']
+
+
 - name: Set Default Network Device and Address
   set_fact:
     _netdev: "{{ 'ansible_'~ netdev1 }}"
