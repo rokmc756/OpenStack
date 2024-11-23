@@ -40,8 +40,8 @@
     - { regexp: "^CONFIG_PROVISION_DEMO=y",                     line: "CONFIG_PROVISION_DEMO=n", state: present }
     - { regexp: "^CONFIG_CEILOMETER_INSTALL=*",                 line: "CONFIG_CEILOMETER_INSTALL=n", state: present }
     - { regexp: "^CONFIG_NEUTRON_OVS_TUNNEL_IF=",               line: "CONFIG_NEUTRON_OVS_TUNNEL_IF={{ netdev1 }}", state: present }
-    - { regexp: "^CONFIG_NEUTRON_ML2_TYPE_DRIVERS=*",           line: "CONFIG_NEUTRON_ML2_TYPE_DRIVERS=vxlan", state: present }
-    - { regexp: "^CONFIG_NEUTRON_ML2_TENANT_NETWORK_TYPES=*",   line: "CONFIG_NEUTRON_ML2_TENANT_NETWORK_TYPES=vxlan", state: present }
+    - { regexp: "^CONFIG_NEUTRON_ML2_TYPE_DRIVERS=*",           line: "CONFIG_NEUTRON_ML2_TYPE_DRIVERS=gre", state: present }
+    - { regexp: "^CONFIG_NEUTRON_ML2_TENANT_NETWORK_TYPES=*",   line: "CONFIG_NEUTRON_ML2_TENANT_NETWORK_TYPES=gre", state: present }
 
     # - { regexp: "^CONFIG_NEUTRON_OVN_TUNNEL_IF=",               line: "CONFIG_NEUTRON_OVN_TUNNEL_IF=ens224", state: present }
 

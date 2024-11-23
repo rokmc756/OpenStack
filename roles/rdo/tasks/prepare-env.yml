@@ -72,9 +72,15 @@
 
 - name: Enable Openstack Repository
   dnf:
-    name: "centos-release-openstack-{{ rdo.project_release }}"
+    name: "centos-release-openstack-{{ rdo.release_name }}"
     state: present
 
+
+#- name: Enable Openstack Repository
+#  dnf:
+#    name: http://trunk.rdoproject.org/rdo_release/openstack-{{ rdo.release_name }}/rdo-release-{{ rdo.release_name }}.el9s.rpm
+#    state: present
+#    disable_gpg_check: true
 
 
 - name: Install Openstack Packstack
@@ -99,6 +105,12 @@
     # name: network-scripts
 
 
+# python3-eventlet-doc
+# python3-gunicorn+eventlet
+# python3-gunicorn
+
+
+
 - name: Configure IP Address with Sysinit Network Scripts
   become_user: root
   template:
@@ -121,8 +133,9 @@
   service: name=NetworkManager enabled=no
 
 
-- name: Disable SELinux Policy
-  import_tasks: disable-selinux.yml
+# No need due to RDO requires SELinux Permissive
+#- name: Disable SELinux Policy
+#  import_tasks: disable-selinux.yml
 
 
 - name: Reboot Required

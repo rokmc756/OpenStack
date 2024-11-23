@@ -1,0 +1,9 @@
+# https://bugzilla.redhat.com/show_bug.cgi?id=1207098
+
+
+# ausearch -m avc -m user_avc -m selinux_err -i -ts today
+
+# The first 2 AVCs are fixed in selinux-policy-targeted-3.13.1-24.el7.noarch. The rest of USER_AVCs is nor allowed neither dontaudited:
+# sesearch -s systemd_logind_t -t cinder_backup_t -c dbus -p send_msg -A -C
+# sesearch -s systemd_logind_t -t cinder_volume_t -c dbus -p send_msg -A -C
+

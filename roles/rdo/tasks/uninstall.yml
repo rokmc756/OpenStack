@@ -9,7 +9,6 @@
   with_items:
     - "uninstall-rdo.sh"
     - "remove-el9s-pkgs.sh"
-
 - debug: msg={{ copy_uninstall_rdo_script }}
 
 
@@ -76,17 +75,17 @@
     - leatherman
 
 
-- name: X
-  shell: |
-    yum --setopt=tsflags=noscripts remove -y openstack-network-scripts
-    yum --setopt=tsflags=noscripts remove -y network-scripts
-  ignore_errors: true
+#- name: Uninstall Openstack Sysinit Network Scripts
+#  shell: |
+#    yum --setopt=tsflags=noscripts remove -y openstack-network-scripts
+#    yum --setopt=tsflags=noscripts remove -y network-scripts
+#  ignore_errors: true
 
 
 - name: Uninstall Openstack Packstack
   package:
     name: "{{ item }}"
-    state: present
+    state: absent
   ignore_errors: true
   with_items:
     - openstack-packstack
@@ -97,10 +96,10 @@
 #  package: name=* state=latest update_cache=yes
 
 
-- name: Install Openstack Packstack
+- name: Uninstall Openstack Packstack
   dnf:
     name: "{{ item }}"
-    state: present
+    state: absent
   ignore_errors: true
   with_items:
     - openstack-selinux
@@ -109,14 +108,16 @@
 
 - name: Disable and Uninstall Openstack Repository
   dnf:
-    name: "centos-release-openstack-{{ rdo.project_release }}"
+    name: "centos-release-openstack-{{ rdo.release_name }}"
     state: absent
-  ignore_errors: true
+#  ignore_errors: true
 
 
-- name: Ensure the CRB Repository is Disable for Rocky Instead of Powertools Provided by Red hat
-  shell: dnf config-manager --disable crb
-  ignore_errors: true
+#- name: Disable and Uninstall Openstack Repository
+#  dnf:
+#    name: "rdo-release-{{ rdo.release_name }}"
+#    state: absent
+#  ignore_errors: true
 
 
 - name: Start Firewalld
@@ -131,6 +132,14 @@
   args:
     chdir: /root/rdo-scripts
     executable: /bin/bash
+
+
+- name: Ensure the CRB Repository is Disable for Rocky Instead of Powertools Provided by Red hat
+  shell: |
+    dnf config-manager --disable crb
+    dnf config-manager --enable epel
+    dnf config-manager --disable devel
+  ignore_errors: true
 
 
 - name: Reboot Required
