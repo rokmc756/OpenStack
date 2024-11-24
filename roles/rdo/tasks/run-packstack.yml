@@ -18,32 +18,102 @@
   command: sysctl --system
 
 
+#- name: Generate RDO the answer file
+#  shell: packstack --gen-answer-file=/root/rdo-scripts/rdo-answer.txt
+#  ignore_errors: yes
+#
+#
+#- name: Replace all IPs with the IP available for access to the dashboard
+#  lineinfile:
+#    dest: /root/rdo-scripts/rdo-answer.txt
+#    regexp: "{{ item.regexp }}"
+#    line: "{{ item.line }}"
+#    state: "{{ item.state }}"
+#  with_items:
+#    - { regexp: "^CONFIG_SSH_KEY=*$",                                line: "CONFIG_SSH_KEY=/root/.ssh/id_rsa.pub",               state: present }
+#    - { regexp: "^CONFIG_DEFAULT_PASSWORD=*$",                       line: "CONFIG_DEFAULT_PASSWORD=changeme",                   state: present }
+#    - { regexp: "^CONFIG_CONTROLLER_HOST=*",                         line: "CONFIG_CONTROLLER_HOST={{ control_ipaddrs }} ",  state: present }
+#    - { regexp: "^CONFIG_COMPUTE_HOSTS=*",                           line: "CONFIG_COMPUTE_HOSTS={{ compute_ipaddrs }}",     state: present }
+#    - { regexp: "^CONFIG_NETWORK_HOSTS=*",                           line: "CONFIG_NETWORK_HOSTS={{ network_ipaddrs }}",     state: present }
+#    - { regexp: "^CONFIG_KEYSTONE_ADMIN_PW=*",                       line: "CONFIG_KEYSTONE_ADMIN_PW=changeme", state: present }
+#    - { regexp: "^CONFIG_HORIZON_SSL=n",                             line: "CONFIG_HORIZON_SSL=y", state: present }
+#    - { regexp: "^CONFIG_PROVISION_DEMO=y",                          line: "CONFIG_PROVISION_DEMO=n", state: present }
+#    - { regexp: "^CONFIG_NTP_SERVERS=*",                             line: "CONFIG_NTP_SERVERS=kr.pool.ntp.org", state: present }
+#    - { regexp: "^CONFIG_LBAAS_INSTALL=*",                           line: "CONFIG_LBAAS_INSTALL=y", state: present }
+#    - { regexp: "^CONFIG_NEUTRON_OVS_BRIDGE_IFACES=*",               line: "CONFIG_CONFIG_NEUTRON_OVS_BRIDGE_IFACES=br-ex:{{ netdev1 }}", state: present }
+#    - { regexp: "^CONFIG_NEUTRON_OVS_TUNNEL_IF=*",                   line: "CONFIG_CONFIG_NEUTRON_OVS_TUNNEL_IF={{ netdev1 }}", state: present }
+#    - { regexp: "^CONFIG_NEUTRON_L2_AGENT=ovn",                      line: "CONFIG_NEUTRON_L2_AGENT=openvswitch", state: present }
+#    - { regexp: "^CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=extnet:br-ex",  line: "CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=physnet1:br-ex", state: present }
+
+
+    # - { regexp: "^CONFIG_CEILOMETER_INSTALL=*",                 line: "CONFIG_CEILOMETER_INSTALL=n", state: present }
+    # - { regexp: "^CONFIG_NEUTRON_OVN_TUNNEL_IF=",               line: "CONFIG_NEUTRON_OVN_TUNNEL_IF={{ netdev1 }}", state: present }
+    # - { regexp: "^CONFIG_NEUTRON_ML2_TYPE_DRIVERS=*",           line: "CONFIG_NEUTRON_ML2_TYPE_DRIVERS=gre", state: present }
+    # - { regexp: "^CONFIG_NEUTRON_ML2_TENANT_NETWORK_TYPES=*",   line: "CONFIG_NEUTRON_ML2_TENANT_NETWORK_TYPES=gre", state: present }
+    # - { regexp: "^CONFIG_NEUTRON_OVS_TUNNEL_IF=",               line: "CONFIG_NEUTRON_OVS_TUNNEL_IF={{ netdev1 }}", state: present }
+
+
 - name: Generate RDO the answer file
-  shell: packstack --gen-answer-file=/root/rdo-scripts/rdo-answer.txt
+  shell: |
+    packstack --default-password=changeme \
+    --os-compute-hosts={{ compute_ipaddrs }} \
+    --os-controller-host={{ control_ipaddrs }} \
+    --os-network-hosts={{ network_ipaddrs }} \
+    --os-neutron-ml2-mechanism-drivers=openvswitch \
+    --os-neutron-ml2-tenant-network-types=vxlan \
+    --os-neutron-ml2-type-drivers=vxlan,flat,vlan \
+    --os-neutron-ml2-vlan-ranges=physnet1:298:299 \
+    --os-neutron-ovs-bridge-interfaces=br-ex:{{ netdev1 }} \
+    --os-neutron-ovs-bridge-mappings=physnet1:br-ex \
+    --os-neutron-l2-agent=openvswitch \
+    --os-heat-install=n \
+    --os-swift-install=n \
+    --os-horizon-install=n \
+    --os-aodh-install=n \
+    --os-ceilometer-install=n \
+    --os-magnum-install=n \
+    --os-trove-install=n \
+    --os-ironic-install=n \
+    --os-neutron-metering-agent-install=n \
+    --os-neutron-vpnaas-install=n \
+    --os-heat-cfn-install=n \
+    --provision-demo=n \
+    --mariadb-pw=changeme \
+    --keystone-db-passwd=changeme \
+    --keystone-admin-passwd=changeme \
+    --keystone-demo-passwd=changeme \
+    --glance-db-passwd=changeme \
+    --glance-ks-passwd=changeme \
+    --cinder-db-passwd=changeme \
+    --cinder-ks-passwd=changeme \
+    --nova-db-passwd=changeme \
+    --nova-ks-passwd=changeme \
+    --os-neutron-ks-password=changeme \
+    --os-neutron-db-password=changeme \
+    --os-neutron-metadata-pw=changeme \
+    --os-swift-ks-passwd=changeme \
+    --os-heat-mysql-password=changeme \
+    --os-heat-ks-passwd=changeme \
+    --os-heat-domain-password=changeme \
+    --ceilometer-ks-passwd=changeme \
+    --gen-answer-file=/root/rdo-scripts/rdo-answer.txt
   ignore_errors: yes
 
 
-- name: Replace all IPs with the IP available for access to the dashboard
-  lineinfile:
-    dest: /root/rdo-scripts/rdo-answer.txt
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-    state: "{{ item.state }}"
-  with_items:
-    - { regexp: "^CONFIG_SSH_KEY=*$",                           line: "CONFIG_SSH_KEY=/root/.ssh/id_rsa.pub",               state: present }
-    - { regexp: "^CONFIG_DEFAULT_PASSWORD=*$",                  line: "CONFIG_DEFAULT_PASSWORD=changeme",                   state: present }
-    - { regexp: "^CONFIG_CONTROLLER_HOST=*",                    line: "CONFIG_CONTROLLER_HOST={{ control_ipaddrs }} ",  state: present }
-    - { regexp: "^CONFIG_COMPUTE_HOSTS=*",                      line: "CONFIG_COMPUTE_HOSTS={{ compute_ipaddrs }}",     state: present }
-    - { regexp: "^CONFIG_NETWORK_HOSTS=*",                      line: "CONFIG_NETWORK_HOSTS={{ network_ipaddrs }}",     state: present }
-    - { regexp: "^CONFIG_KEYSTONE_ADMIN_PW=*",                  line: "CONFIG_KEYSTONE_ADMIN_PW=changeme", state: present }
-    - { regexp: "^CONFIG_HORIZON_SSL=n",                        line: "CONFIG_HORIZON_SSL=y", state: present }
-    - { regexp: "^CONFIG_PROVISION_DEMO=y",                     line: "CONFIG_PROVISION_DEMO=n", state: present }
-    - { regexp: "^CONFIG_CEILOMETER_INSTALL=*",                 line: "CONFIG_CEILOMETER_INSTALL=n", state: present }
-    - { regexp: "^CONFIG_NEUTRON_OVS_TUNNEL_IF=",               line: "CONFIG_NEUTRON_OVS_TUNNEL_IF={{ netdev1 }}", state: present }
-    - { regexp: "^CONFIG_NEUTRON_ML2_TYPE_DRIVERS=*",           line: "CONFIG_NEUTRON_ML2_TYPE_DRIVERS=gre", state: present }
-    - { regexp: "^CONFIG_NEUTRON_ML2_TENANT_NETWORK_TYPES=*",   line: "CONFIG_NEUTRON_ML2_TENANT_NETWORK_TYPES=gre", state: present }
+#    --mariadb-install=y
+#    --os-glance-install=y
+#    --os-cinder-install=y
+#    --os-manila-install=y
+#    --os-nova-install=y
+#    --os-neutron-install=y
 
-    # - { regexp: "^CONFIG_NEUTRON_OVN_TUNNEL_IF=",               line: "CONFIG_NEUTRON_OVN_TUNNEL_IF=ens224", state: present }
+
+# CONFIG_NEUTRON_ML2_MECHANISM_DRIVERS=ovn
+#
+# CONFIG_NEUTRON_ML2_SRIOV_INTERFACE_MAPPINGS=
+# CONFIG_NEUTRON_LB_INTERFACE_MAPPINGS=
+#
+# CONFIG_NEUTRON_OVN_TUNNEL_IF=
 
 
 #CONFIG_NEUTRON_ML2_MECHANISM_DRIVERS=ovn
@@ -60,7 +130,6 @@
 # CONFIG_NEUTRON_ML2_SRIOV_INTERFACE_MAPPINGS=
 
 
-
 # - { regexp: "^CONFIG_NEUTRON_OVN_TUNNEL_IF=*",  line: "CONFIG_NEUTRON_OVN_TUNNEL_IF=xxx", state: present }
 # - { regexp: "^CONFIG_STORAGE_HOST=*",           line: "CONFIG_STORAGE_HOST={{ control_node_ipaddr }}",      state: present }
 # - { regexp: "^CONFIG_AMQP_HOST=*",              line: "CONFIG_AMQP_HOST={{ control_node_ipaddr }}",         state: present }
@@ -74,9 +143,9 @@
 # - { regexp: "^CONFIG_CINDER_NETAPP_SA_PASSWORD=*",          line: "CONFIG_CINDER_NETAPP_SA_PASSWORD=changeme", state: present }
 # - { regexp: "^CONFIG_CINDER_SOLIDFIRE_PASSWORD=*",          line: "CONFIG_CINDER_SOLIDFIRE_PASSWORD=changeme", state: present }
 # - { regexp: "^CONFIG_MANILA_NETAPP_PASSWORD=*",             line: "CONFIG_MANILA_NETAPP_PASSWORD=changeme", state: present }
-#- { regexp: "^CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=*",   line: "CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=changeme", state: present }
-#- { regexp: "^CONFIG_HEAT_DOMAIN_PASSWORD=*",               line: "CONFIG_HEAT_DOMAIN_PASSWORD=changeme",    state: present }
-#- { regexp: "^CONFIG_CINDER_VOLUMES_SIZE=*",                line: "CONFIG_CINDER_VOLUMES_SIZE=10G",     state: present }
+# - { regexp: "^CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=*",   line: "CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_HEAT_DOMAIN_PASSWORD=*",               line: "CONFIG_HEAT_DOMAIN_PASSWORD=changeme",    state: present }
+# - { regexp: "^CONFIG_CINDER_VOLUMES_SIZE=*",                line: "CONFIG_CINDER_VOLUMES_SIZE=10G",     state: present }
 
 
 # CONFIG_MARIADB_HOST=
@@ -104,8 +173,6 @@
 # - { regexp: "^CONFIG_AMQP_HOST=*",         line: "CONFIG_AMQP_HOST={{ control_node_ipaddr }}",         state: present }
 # - { regexp: "^CONFIG_MARIADB_HOST=*" ,     line: "CONFIG_MARIADB_HOST={{ storage_node_ipaddr }}",      state: present }
 # - { regexp: "^CONFIG_REDIS_HOST=*",        line: "CONFIG_REDIS_HOST={{ storage_node_ipaddr }}",        state: present }
-
-
 
 # CONFIG_CONTROLLER_HOST=192.168.1.71
 # CONFIG_COMPUTE_HOSTS=192.168.1.71
@@ -143,14 +210,17 @@
 # CONFIG_PROVISION_DEMO=y
 # CONFIG_PROVISION_OVS_BRIDGE=y
 
+
 #- name: Run Packstack to deploy OpenStack
 #  shell: packstack --allinone --provision-demo=n --provision-ovs-bridge=n --debug -t 3600
+#  ignore_errors: true
 
 
 #- name: Run Packstack to deploy OpenStack
 #  shell: packstack --answer-file=/root/rdo-scripts/rdo-answer.txt
 #  register: run_packstack
+#  ignore_errors: true
 #  when: inventory_hostname == "rk9-node01"                                                  #   --debug -t 3600
-#
 #- debug: msg="{{ run_packstack}}"
+
 

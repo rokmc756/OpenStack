@@ -41,6 +41,8 @@
   - https://www.linuxtechi.com/multiple-node-openstack-liberty-installation-on-centos-7-x/
   - https://docs.napatech.com/r/Getting-Started-with-Napatech-Link-VirtualizationTM-Software/Installing-OpenStack-on-Multiple-Nodes-via-Packstack
 
+* RHOSP 16 with Multiple Nodes
+  - https://www.linkedin.com/pulse/how-deploy-openstack-16-train-platform-using-packstack-goran-jumi%C4%87/
 
 [ Packstack Deploy Error ]
 ~~~
