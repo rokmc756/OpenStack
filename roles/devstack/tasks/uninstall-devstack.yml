@@ -1,0 +1,84 @@
+---
+- name: Uninstall Devstack
+  become_user: stack
+  shell: |
+    ./unstack.sh
+  ignore_errors: true
+  args:
+    chdir: /opt/stack/devstack
+    executable: /bin/bash
+
+
+- name: Clean Devstack
+  become_user: stack
+  shell: |
+    ./clean.sh
+  ignore_errors: true
+  args:
+    chdir: /opt/stack/devstack
+    executable: /bin/bash
+
+
+- name: Enable SELinux Policy
+  import_tasks: enable-selinux.yml
+
+
+- name: Enable NetworkManager
+  service: name=NetworkManager enabled=yes
+  ignore_errors: true
+
+
+- name: Disable Sysinit Network
+  service: name=network enabled=no
+  ignore_errors: true
+
+
+- name: Delete Sysinit Network Scripts
+  become_user: root
+  file:
+    path: "/etc/sysconfig/network-scripts/{{ item }}"
+    state: absent
+  register: delete_sysinit_network_scripts
+  ignore_errors: true
+  with_items:
+    - "ifcfg-ens192"
+    - "ifcfg-ens224"
+    - "ifcfg-ens256"
+- debug: msg={{ delete_sysinit_network_scripts }}
+
+
+- name: Uninstall Sysinit Network Scripts
+  package:
+    name: network-scripts
+    state: absent
+  ignore_errors: true
+
+
+- name: Flush IPtables
+  become_user: root
+  shell: |
+    iptables -F
+    /sbin/iptables-save > /etc/sysconfig/iptables
+    cat /etc/sysconfig/iptables
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
+
+- name: Start Firewalld
+  service: name=firewalld state=started enabled=no
+  ignore_errors: true
+
+
+- name: Reboot Required
+  shell: ( /bin/sleep 5; /sbin/shutdown -r now "Ansible updates triggered" ) &
+  ignore_errors: true
+  register: reboot_required
+  async: 120
+  poll: 0
+  notify:
+    - Waiting for Server to Come Back After Reboot
+
+
+- meta: flush_handlers
+

@@ -1,0 +1,71 @@
+---
+- name: Create an Empty File for Devstack Sysctl Parameters
+  copy:
+    content: ""
+    dest: /etc/sysctl.d/99-sysctl-devstack.conf
+    force: no
+
+
+- name: Configure Sysctl Parameters for Devstack
+  lineinfile:
+    path: /etc/sysctl.d/99-sysctl-devstack.conf
+    line: "{{ item }}"
+  with_items:
+    - "vm.overcommit_memory = 1"
+
+
+- name: Apply Sysctl Parameters
+  command: sysctl --system
+
+
+- name: Install WSGI Python Module
+  become_user: root
+  shell: |
+    dnf install -y mod_wsgi
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
+
+- name: Enable Open Vswitch
+  shell: |
+    sudo systemctl enable openvswitch
+    sudo systemctl start openvswitch
+    sudo systemctl start ovs-vswitchd.service
+    sudo systemctl start ovsdb-server.service
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
+
+
+- name: Check if the Devstack Config Already Exists
+  stat: path=/opt/stack/devstack/local.conf
+  register: devstack_conf_exists
+- debug: msg={{ devstack_conf_exists }}
+
+
+- name: Copy Local.conf
+  become_user: stack
+  template:
+    src: "{{ item }}.j2"
+    dest: "/opt/stack/devstack/{{ item }}"
+    mode: 0644
+  register: copy_local_conf
+  ignore_errors: true
+  with_items:
+    - "local.conf"
+  when: devstack_conf_exists.stat.exists != True
+- debug: msg={{ copy_local_conf }}
+  when: print_debug == true and devstack_conf_exists.stat.exists != True
+
+
+- name: Install Devstack
+  become_user: stack
+  shell: |
+   ./stack.sh
+  ignore_errors: true
+  args:
+    chdir: /opt/stack/devstack
+    executable: /bin/bash
+

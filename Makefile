@@ -50,7 +50,12 @@ hosts:
 	make -f ./makefile_configs/Makefile.hosts r=${r} s=${s} c=${c} USERNAME=${USERNAME}
 
 rdo:
+	ln -sf ansible-hosts-rdo ansible-hosts
 	make -f ./makefile_configs/Makefile.rdo r=${r} s=${s} c=${c} USERNAME=${USERNAME}
+
+devstack:
+	ln -sf ansible-hosts-devstack ansible-hosts
+	make -f ./makefile_configs/Makefile.devstack r=${r} s=${s} c=${c} USERNAME=${USERNAME}
 
 
 # - https://ansible-tutorial.schoolofdevops.com/control_structures/

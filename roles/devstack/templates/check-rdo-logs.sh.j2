@@ -1,0 +1,10 @@
+cd /var/log
+
+tail -n 40 ./cinder/*.log ./keystone/*.log ./redis/*.log ./ovn/*.log \
+./glance/*.log ./redis/*.log ./rabbitmq/*.log ./cinder/*.log ./gnocchi/*.log ./keystone/*.log
+
+tail -n 40 /var/tmp/packstack/latest/openstack-setup.log
+
+tail -n 40 /var/tmp/packstack/latest/manifests/*.pp
+
+ps -eo pcpu,pid,user,args | tail -n +2 | sort -k1 -r -n | head -10

@@ -1,0 +1,22 @@
+[[local|localrc]]
+
+# Password for KeyStone, Database, RabbitMQ and Service
+ADMIN_PASSWORD=changeme
+DATABASE_PASSWORD=$ADMIN_PASSWORD
+RABBIT_PASSWORD=$ADMIN_PASSWORD
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+
+# Host IP - get your Server/VM IP address from ip addr command
+HOST_IP=192.168.1.71
+
+FLAT_INTERFACE={{ netdev1 }}
+PUBLIC_INTERFACE={{ netdev2 }}
+
+# FIXED_RANGE=192.168.2.0/25
+# FLOATING_RANGE=203.0.113.0/24
+
+PUBLIC_NETWORK_GATEWAY=192.168.2.1
+
+PUBLIC_PHYSICAL_NETWORK=public
+OVS_BRIDGE_MAPPINGS=public:br-ex
+

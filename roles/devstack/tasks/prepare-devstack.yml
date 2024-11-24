@@ -1,0 +1,161 @@
+---
+- name: Install Language Pack
+  package: name={{item}} state=present
+  with_items:
+   - glibc-langpack-en
+   - dnf-plugins-core
+
+
+- name: Configure Language Pack
+  lineinfile:
+    path: /etc/environment
+    line: "{{ item }}"
+    state: present
+  with_items:
+    - "LANG=en_US.utf-8"
+    - "LC_ALL=en_US.utf-8"
+
+
+- name: Create an Empty File for Devstack Sysctl Parameters
+  copy:
+    content: ""
+    dest: /etc/sysctl.d/99-sysctl-devstack.conf
+    force: no
+
+
+- name: Configure Sysctl Parameters for Devstack
+  lineinfile:
+    path: /etc/sysctl.d/99-sysctl-devstack.conf
+    line: "{{ item }}"
+  with_items:
+    - "vm.overcommit_memory = 1"
+
+
+- name: Apply Sysctl Parameters
+  command: sysctl --system
+
+
+- name: Install WSGI Python Module
+  become_user: root
+  shell: |
+    dnf install -y mod_wsgi
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
+
+- name: Stop Firewalld
+  service: name=firewalld state=stopped enabled=no
+
+
+- name: Ensure the CRB Repository is Enabled for Rocky Instead of Powertools Provided by Red hat
+  shell: |
+    dnf config-manager --disable crb
+    dnf config-manager --enable epel
+    dnf config-manager --disable devel                 # Openstack Repository for Rocky Linux 9.x
+
+
+#- name: Commented packages excluded for python3-neutron
+#  replace:
+#    path: /etc/dnf/dnf.conf
+#    regexp: "{{ item.regexp }}"
+#    replace: "{{ item.line }}"
+#    backup: "{{ item.backup }}"
+#  register: commented_packages_excluded
+#  with_items:
+#    - { regexp: "^exclude=", line: "#exclude=", state: present, backup: no }
+#- debug: msg={{ commented_packages_excluded }}
+#
+#
+# Upgrade packages to latest version
+#- name: Update All Packages
+#  package: name=* state=latest update_cache=yes
+
+
+- name: Install Sysinit Network Scripts
+  dnf:
+    name: network-scripts
+    state: present
+
+
+- name: Configure IP Address with Sysinit Network Scripts
+  become_user: root
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/sysconfig/network-scripts/{{ item }}"
+    mode: 0644
+  register: configure_sysinit_network_scripts
+  with_items:
+    - "ifcfg-ens192"
+    - "ifcfg-ens224"
+    - "ifcfg-ens256"
+- debug: msg={{ configure_sysinit_network_scripts }}
+
+
+- name: Enable Sysinit Network
+  service: name=network enabled=yes
+
+
+- name: Disable NetworkManager
+  service: name=NetworkManager enabled=no
+
+
+# No need due to RDO requires SELinux Permissive
+#- name: Disable SELinux Policy
+#  import_tasks: disable-selinux.yml
+
+
+- name: Add Stack User
+  shell: |
+    sudo adduser -s /bin/bash -d /opt/stack -m stack
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
+
+- name: Add Sudo User for Stack
+  shell: |
+    echo "stack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/stack
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
+
+- name: Change Permission
+  shell: |
+    sudo chmod 755 /opt/stack
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
+
+- name: Check if the Devstack Source Code is Already Downloaded
+  stat: path=/opt/stack/devstack
+  register: devstack_dir_existed
+- debug: msg={{ devstack_dir_existed }}
+
+
+# --single-branch --branch release-{{ devstack.major_version }}.{{ devstack.minor_version }}
+- name: Clone Devstack Source Code
+  shell: |
+    git -C "/opt/stack" clone https://git.openstack.org/openstack-dev/devstack
+  register: git_clone_devstack
+  ignore_errors: true
+  when: devstack_dir_existed.stat.exists != True
+- debug: msg={{ git_clone_devstack }}
+  when: print_debug == true and devstack_dir_existed.stat.exists != True
+# git checkout stable/xena
+
+
+- name: Reboot Required
+  shell: ( /bin/sleep 5; /sbin/shutdown -r now "Ansible updates triggered" ) &
+  ignore_errors: true
+  register: reboot_required
+  async: 120
+  poll: 0
+  notify:
+    - Waiting for Server to Come Back After Reboot
+
+
+- meta: flush_handlers
+
