@@ -1,0 +1,135 @@
+[[local|localrc]]
+GIT_BASE=${GIT_BASE:-https://git.openstack.org}
+
+ADMIN_PASSWORD=changeme
+DATABASE_PASSWORD=$ADMIN_PASSWORD
+RABBIT_PASSWORD=$ADMIN_PASSWORD
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+SERVICE_TOKEN=changeme
+RECLONE=no
+
+# public interface eth0 will be added to ovs br-ex. eth0 loses its ip, br-ex gets the ip.
+# if the process is not finished correctly, host is left ssh unconnectable.
+HOST_IP=192.168.0.71
+
+FLAT_INTERFACE=ens224
+FLOATING_RANGE="192.168.1.0/24"
+IPV4_ADDRS_SAFE_TO_USE="10.0.0.0/22"
+Q_FLOATING_ALLOCATION_POOL=start=192.168.1.200,end=192.168.1.250
+PUBLIC_NETWORK_GATEWAY=192.168.1.1
+PUBLIC_INTERFACE=ens256
+FIXED_RANGE=192.168.2.0/24
+NETWORK_GATEWAY=192.168.2.1
+
+
+# Open vSwitch provider networking configuration
+Q_USE_PROVIDERNET_FOR_PUBLIC=True
+OVS_PHYSICAL_BRIDGE=br-ex
+PUBLIC_BRIDGE=br-ex
+OVS_BRIDGE_MAPPINGS=public:br-ex
+
+
+# misc
+API_RATE_LIMIT=False
+LIBS_FROM_GIT=python-openstackclient
+
+# log
+DEBUG=True
+VERBOSE=True
+DEST=/opt/stack
+LOGFILE=$DEST/logs/stack.sh.log
+SCREEN_LOGDIR=$DEST/logs/screen
+
+SYSLOG=False
+LOG_COLOR=False
+LOGDAYS=7
+
+# If don't set ENABLED_SERVICES, devstack will install its default set of services
+ENABLED_SERVICES=key,dstat,rabbit,mysql,tempest
+
+# keystone
+KEYSTONE_CATALOG_BACKEND=sql
+
+# enable ceph
+enable_service ceph
+CEPH_LOOPBACK_DISK_SIZE=10G
+CEPH_CONF=/etc/ceph/ceph.conf
+CEPH_REPLICAS=3
+GLANCE_CEPH_USER=glance
+GLANCE_CEPH_POOL=glance
+CINDER_DRIVER=ceph
+CINDER_CEPH_USER=cinder
+CINDER_CEPH_POOL=cinder
+CINDER_CEPH_UUID=65B06887-B0EA-427F-B8BD-829AC2E18FF6
+CINDER_BAK_CEPH_POOL=cinder_bak
+CINDER_BAK_CEPH_USER=cind_bak
+CINDER_ENABLED_BACKENDS=ceph,lvm
+NOVA_CEPH_POOL=nova
+
+# adjust scheduler to balance VMs (followed devstack official doc, but nova doesn't actually have this SimpleScheduler)
+#SCHEDULER=nova.scheduler.simple.SimpleScheduler
+
+# enable nova
+enable_service n-api
+enable_service n-sch
+enable_service n-cond
+enable_service n-api-meta
+enable_service n-novnc
+enable_service n-crt
+enable_service n-net
+enable_service n-cauth
+
+# enable glance
+enable_service g-api
+enable_service g-reg
+
+# enable swift (I find no way to just install s-proxy on controller node)
+enable_service swift3
+enable_service s-proxy s-object s-container s-account
+SWIFT_HASH=E75834B828A54832B8AF2294FD8F5C5D
+SWIFT_REPLICAS=3
+SWIFT_DATA_DIR=$DEST/data/swift
+
+# cinder
+enable_service c-api
+enable_service c-sch
+enable_service c-bak
+
+VOLUME_GROUP="stack-volumes"
+VOLUME_NAME_PREFIX="volume-"
+VOLUME_BACKING_FILE_SIZE=10250M
+
+# enable neutron
+enable_service q-svc
+
+# VLAN configuration
+Q_PLUGIN=ml2
+ENABLE_TENANT_VLANS=True
+
+# GRE tunnel configuration
+Q_PLUGIN=ml2
+ENABLE_TENANT_TUNNELS=True
+
+# VXLAN tunnel configuration
+Q_PLUGIN=ml2
+Q_ML2_TENANT_NETWORK_TYPE=vxlan
+
+# enable ceilometer
+enable_service ceilometer-acentral
+enable_service ceilometer-collector
+enable_service ceilometer-alarm-singleton
+enable_service ceilometer-alarm-notifier
+enable_service ceilometer-alarm-evaluator
+enable_service ceilometer-api
+CEILOMETER_BACKEND=mongodb
+
+# enable heat
+enable_service heat
+enable_service h-api
+enable_service h-api-cfn
+enable_service h-api-cw
+enable_service h-eng
+
+# enable horizon
+enable_service horizon
+

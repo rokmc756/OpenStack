@@ -29,6 +29,9 @@
     line: "{{ item }}"
   with_items:
     - "vm.overcommit_memory = 1"
+    - "net.ipv4.ip_forward = 1"
+    - "net.ipv4.conf.all.rp_filter = 0"
+    - "net.ipv4.conf.default.rp_filter = 0"
 
 
 - name: Apply Sysctl Parameters
@@ -50,9 +53,9 @@
 
 - name: Ensure the CRB Repository is Enabled for Rocky Instead of Powertools Provided by Red hat
   shell: |
-    dnf config-manager --disable crb
-    dnf config-manager --enable epel
-    dnf config-manager --disable devel                 # Openstack Repository for Rocky Linux 9.x
+    sudo dnf config-manager --enable crb
+    sudo dnf config-manager --enable epel
+    sudo dnf config-manager --disable devel                 # Openstack Repository for Rocky Linux 9.x
 
 
 #- name: Commented packages excluded for python3-neutron
@@ -72,32 +75,14 @@
 #  package: name=* state=latest update_cache=yes
 
 
-- name: Install Sysinit Network Scripts
-  dnf:
-    name: network-scripts
-    state: present
+#- name: Install Open Vswitch
+#  dnf:
+#    name: openvswitch3.4
+#    state: present
 
 
-- name: Configure IP Address with Sysinit Network Scripts
-  become_user: root
-  template:
-    src: "{{ item }}.j2"
-    dest: "/etc/sysconfig/network-scripts/{{ item }}"
-    mode: 0644
-  register: configure_sysinit_network_scripts
-  with_items:
-    - "ifcfg-ens192"
-    - "ifcfg-ens224"
-    - "ifcfg-ens256"
-- debug: msg={{ configure_sysinit_network_scripts }}
-
-
-- name: Enable Sysinit Network
-  service: name=network enabled=yes
-
-
-- name: Disable NetworkManager
-  service: name=NetworkManager enabled=no
+- name: Enable Legacy Network
+  import_tasks: enable-legacy-network.yml
 
 
 # No need due to RDO requires SELinux Permissive
@@ -139,12 +124,15 @@
 - name: Clone Devstack Source Code
   shell: |
     git -C "/opt/stack" clone https://git.openstack.org/openstack-dev/devstack
+    # git checkout stable/2024.2
   register: git_clone_devstack
   ignore_errors: true
   when: devstack_dir_existed.stat.exists != True
 - debug: msg={{ git_clone_devstack }}
   when: print_debug == true and devstack_dir_existed.stat.exists != True
 # git checkout stable/xena
+# git clone https://opendev.org/openstack/neutron.git
+# git checkout zed-eom
 
 
 - name: Reboot Required

@@ -12,6 +12,9 @@
     line: "{{ item }}"
   with_items:
     - "vm.overcommit_memory = 1"
+    - "net.ipv4.ip_forward = 1"
+    - "net.ipv4.conf.all.rp_filter = 0"
+    - "net.ipv4.conf.default.rp_filter = 0"
 
 
 - name: Apply Sysctl Parameters
@@ -22,6 +25,7 @@
   become_user: root
   shell: |
     dnf install -y mod_wsgi
+    dnf install -y openvswitch3.4
   ignore_errors: true
   args:
     executable: /bin/bash
@@ -36,7 +40,6 @@
   ignore_errors: true
   args:
     executable: /bin/bash
-
 
 
 - name: Check if the Devstack Config Already Exists
@@ -60,12 +63,12 @@
   when: print_debug == true and devstack_conf_exists.stat.exists != True
 
 
-- name: Install Devstack
-  become_user: stack
-  shell: |
-   ./stack.sh
-  ignore_errors: true
-  args:
-    chdir: /opt/stack/devstack
-    executable: /bin/bash
+#- name: Install Devstack
+#  become_user: stack
+#  shell: |
+#   ./stack.sh
+#  ignore_errors: true
+#  args:
+#    chdir: /opt/stack/devstack
+#    executable: /bin/bash
 

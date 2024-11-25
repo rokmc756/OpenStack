@@ -1,0 +1,37 @@
+- name: Enable NetworkManager
+  service: name=NetworkManager enabled=yes
+  ignore_errors: true
+
+
+- name: Disable Sysinit Network
+  service: name=network enabled=no
+  ignore_errors: true
+
+
+- name: Delete Sysinit Network Scripts
+  become_user: root
+  file:
+    path: "/etc/sysconfig/network-scripts/{{ item }}"
+    state: absent
+  register: delete_sysinit_network_scripts
+  ignore_errors: true
+  with_items:
+    - "ifcfg-ens192"
+    - "ifcfg-ens224"
+    - "ifcfg-ens256"
+- debug: msg={{ delete_sysinit_network_scripts }}
+
+
+#- name: Uninstall Sysinit Network Scripts
+#  dnf:
+#    name: openstack-network-scripts
+#    state: absent
+#  ignore_errors: true
+
+
+- name: Uninstall Openstack Sysinit Network Scripts
+  shell: |
+    yum --setopt=tsflags=noscripts remove -y network-scripts
+  ignore_errors: true
+#  yum --setopt=tsflags=noscripts remove -y openstack-network-scripts
+

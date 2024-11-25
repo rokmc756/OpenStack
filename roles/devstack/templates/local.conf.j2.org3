@@ -1,5 +1,5 @@
 [[local|localrc]]
-# https://docs.openstack.org/devstack/latest/networking.html
+HOST_IP=192.168.0.71
 FORCE=yes
 ADMIN_PASSWORD=changeme
 DATABASE_PASSWORD=$ADMIN_PASSWORD
@@ -29,34 +29,21 @@ enable_service q-agt
 enable_service q-dhcp
 enable_service q-l3
 enable_service q-meta
-enable_service placement-api
-# enable_service placement-client
 
-
-# IP address of the controller node
-HOST_IP=192.168.2.71        # Management network IP of the controller
-FLOATING_RANGE="192.168.2.0/24" 
+## Neutron options
+#Q_USE_SECGROUP=True
+FLOATING_RANGE="192.168.1.0/24"    
 IPV4_ADDRS_SAFE_TO_USE="10.0.0.0/22"    
-# PUBLIC_NETWORK_GATEWAY="192.168.2.1" # Avoid real gateway
-PUBLIC_NETWORK_GATEWAY="192.168.2.254" 
+Q_FLOATING_ALLOCATION_POOL=start=192.168.1.200,end=192.168.1.250
+PUBLIC_NETWORK_GATEWAY="192.168.100.1"
+# PUBLIC_INTERFACE=mybr0 // 설정한 브릿지
+PUBLIC_INTERFACE=ens256
 
-# Networking settings
-FLAT_INTERFACE=ens192       # Management network interface
-PUBLIC_INTERFACE=ens256     # External/Public network interface
-TENANT_INTERFACE=ens224     # Optional: Interface for tenant traffic
-
-# Open vSwitch configuration
-OVS_PHYSICAL_BRIDGE=br-ex
-OVS_BRIDGE_MAPPINGS=public:br-ex
-PUBLIC_BRIDGE=br-ex
-
-# Floating IP pool
-# Q_FLOATING_ALLOCATION_POOL=start=192.168.1.100,end=192.168.1.200
-Q_FLOATING_ALLOCATION_POOL=start=192.168.2.200,end=192.168.2.250
+# Open vSwitch provider networking configuration
 Q_USE_PROVIDERNET_FOR_PUBLIC=True
-
-# ENABLED_SERVICES=placement-api
-
+OVS_PHYSICAL_BRIDGE=br-ex
+PUBLIC_BRIDGE=br-ex
+OVS_BRIDGE_MAPPINGS=public:br-ex
 
 [[post-config|/$Q_PLUGIN_CONF_FILE]]
 [ml2]
