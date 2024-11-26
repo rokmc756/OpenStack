@@ -1,0 +1,32 @@
+---
+- name: Check OS ( Devstack )
+  fail: msg="Not a Red Hat based system!"
+  when: ansible_os_family != 'RedHat' or ansible_os_family != 'CentOS' or ansible_os_family != 'Rocky'
+
+
+- name: Set Facts for Package Name and List and Network Range
+  import_tasks: set-devstack-facts.yml
+  tags:
+    - prepare
+    - install
+    - uninstall
+  when: inventory_hostname in groups['all']
+
+
+- name: Prepare Devstack Environment
+  import_tasks: prepare-undercloud.yml
+  tags: prepare
+  when: inventory_hostname in groups['undercloud']
+
+
+- name: Install Devstack
+  import_tasks: install-undercloud.yml
+  tags: install
+  when: inventory_hostname in groups['undercloud']
+
+
+- name: Uninstall Devstack
+  import_tasks: uninstall-undercloud.yml
+  tags: uninstall
+  when: inventory_hostname in groups['undercloud']
+

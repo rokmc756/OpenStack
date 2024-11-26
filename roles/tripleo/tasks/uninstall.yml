@@ -1,0 +1,164 @@
+- name: Copy Uninstall RDO Script
+  become_user: root
+  template:
+    src: "{{ item }}.j2"
+    dest: "/root/rdo-scripts/{{ item }}"
+    mode: 0755
+  register: copy_uninstall_rdo_script
+  ignore_errors: true
+  with_items:
+    - "uninstall-rdo.sh"
+    - "remove-el9s-pkgs.sh"
+- debug: msg={{ copy_uninstall_rdo_script }}
+
+
+- name: Run Uninstall RDO Script
+  shell: |
+    ./uninstall-rdo.sh
+  ignore_errors: true
+  args:
+    chdir: /root/rdo-scripts
+    executable: /bin/bash
+
+
+- name: Enable SELinux Policy
+  import_tasks: enable-selinux.yml
+
+
+- name: Enable NetworkManager
+  service: name=NetworkManager enabled=yes
+  ignore_errors: true
+
+
+- name: Disable Sysinit Network
+  service: name=network enabled=no
+  ignore_errors: true
+
+
+- name: Delete Sysinit Network Scripts
+  become_user: root
+  file:
+    path: "/etc/sysconfig/network-scripts/{{ item }}"
+    state: absent
+  register: delete_sysinit_network_scripts
+  ignore_errors: true
+  with_items:
+    - "ifcfg-ens192"
+    - "ifcfg-ens224"
+    - "ifcfg-ens256"
+- debug: msg={{ delete_sysinit_network_scripts }}
+
+
+- name: Uninstall Openstack Sysinit Network Scripts
+  package:
+    name: openstack-network-scripts
+    state: absent
+  ignore_errors: true
+  # name: network-scripts
+
+
+- name: Uninstall Openstack Packstack
+  package:
+    name: "{{ item }}"
+    state: present
+  ignore_errors: true
+  with_items:
+    - python3-gpid-proton
+
+
+- name: Uninstall Openstack Packstack
+  package:
+    name: "{{ item }}"
+    state: present
+  ignore_errors: true
+  with_items:
+    - leatherman
+
+
+#- name: Uninstall Openstack Sysinit Network Scripts
+#  shell: |
+#    yum --setopt=tsflags=noscripts remove -y openstack-network-scripts
+#    yum --setopt=tsflags=noscripts remove -y network-scripts
+#  ignore_errors: true
+
+
+- name: Uninstall Openstack Packstack
+  package:
+    name: "{{ item }}"
+    state: absent
+  ignore_errors: true
+  with_items:
+    - openstack-packstack
+
+
+# Upgrade packages to latest version
+#- name: Update All Packages
+#  package: name=* state=latest update_cache=yes
+
+
+- name: Uninstall Openstack Packstack
+  dnf:
+    name: "{{ item }}"
+    state: absent
+  ignore_errors: true
+  with_items:
+    - openstack-selinux
+    - python3-openstackclient
+
+
+- name: Disable and Uninstall Openstack Repository
+  dnf:
+    name: "centos-release-openstack-{{ rdo.release_name }}"
+    state: absent
+#  ignore_errors: true
+
+
+#- name: Disable and Uninstall Openstack Repository
+#  dnf:
+#    name: "rdo-release-{{ rdo.release_name }}"
+#    state: absent
+#  ignore_errors: true
+
+
+- name: Start Firewalld
+  service: name=firewalld state=started enabled=no
+  ignore_errors: true
+
+
+- name: Remove EL9s RDO Packages Remained
+  shell: |
+    ./remove-el9s-pkgs.sh
+  ignore_errors: true
+  args:
+    chdir: /root/rdo-scripts
+    executable: /bin/bash
+
+
+- name: Ensure the CRB Repository is Disable for Rocky Instead of Powertools Provided by Red hat
+  shell: |
+    dnf config-manager --disable crb
+    dnf config-manager --enable epel
+    dnf config-manager --disable devel
+  ignore_errors: true
+
+
+  # iptables -F
+  # sh -c '/sbin/iptables-save > /etc/sysconfig/iptables'
+  # cat /etc/sysconfig/iptables
+
+
+- name: Reboot Required
+  shell: ( /bin/sleep 5; /sbin/shutdown -r now "Ansible updates triggered" ) &
+  ignore_errors: true
+  register: reboot_required
+  async: 120
+  poll: 0
+  notify:
+    - Waiting for Server to Come Back After Reboot
+
+
+- meta: flush_handlers
+
+
+# https://gist.github.com/ksingh7/7a9f1f62c06318a17dad
+

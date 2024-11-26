@@ -1,0 +1,27 @@
+---
+- name: Install Sysinit Network Scripts
+  dnf:
+    name: openstack-network-scripts
+    state: present
+
+
+- name: Configure IP Address with Sysinit Network Scripts
+  become_user: root
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/sysconfig/network-scripts/{{ item }}"
+    mode: 0644
+  register: configure_sysinit_network_scripts
+  with_items:
+    - "ifcfg-ens192"
+    - "ifcfg-ens224"
+    - "ifcfg-ens256"
+- debug: msg={{ configure_sysinit_network_scripts }}
+
+
+- name: Enable Sysinit Network
+  service: name=network enabled=yes
+
+
+- name: Disable NetworkManager
+  service: name=NetworkManager enabled=no

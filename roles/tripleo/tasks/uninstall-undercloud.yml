@@ -1,35 +1,15 @@
 ---
-- name: Uninstall Devstack
-  become_user: stack
-  shell: |
-    ./unstack.sh
-  ignore_errors: true
-  args:
-    chdir: /opt/stack/devstack
-    executable: /bin/bash
-
-
-- name: Clean Devstack
-  become_user: stack
-  shell: |
-    ./clean.sh
-  ignore_errors: true
-  args:
-    chdir: /opt/stack/devstack
-    executable: /bin/bash
-
-
-- name: Copy Uninstall RDO Script
-  become_user: root
-  template:
-    src: "{{ item }}.j2"
-    dest: "/root/{{ item }}"
-    mode: 0755
-  register: copy_uninstall_el9s_script
-  ignore_errors: true
-  with_items:
-    - "remove-el9s-pkgs.sh"
-- debug: msg={{ copy_uninstall_el9s_script }}
+#- name: Copy Uninstall RDO Script
+#  become_user: root
+#  template:
+#    src: "{{ item }}.j2"
+#    dest: "/root/{{ item }}"
+#    mode: 0755
+#  register: copy_uninstall_el9s_script
+#  ignore_errors: true
+#  with_items:
+#    - "remove-el9s-pkgs.sh"
+#- debug: msg={{ copy_uninstall_el9s_script }}
 
 
 #- name: Remove EL9s RDO Packages Remained
@@ -47,16 +27,6 @@
 
 - name: Disable Legacy Network
   import_tasks: disable-legacy-network.yml
-
-
-- name: Uninstall Uncleaned Packages by Devstack
-  package:
-    name: "{{ item }}"
-    state: absent
-  ignore_errors: true
-  with_items:
-    - "httpd"
-#    - "openvswitch3.4"
 
 
 - name: Flush IPtables
