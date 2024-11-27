@@ -55,7 +55,7 @@
   shell: |
     sudo dnf config-manager --enable crb
     sudo dnf config-manager --enable epel
-    sudo dnf config-manager --disable devel                 # Openstack Repository for Rocky Linux 9.x
+    sudo dnf config-manager --enable devel             # Openstack Repository for Rocky Linux 9.x
 
 
 #- name: Commented packages excluded for python3-neutron

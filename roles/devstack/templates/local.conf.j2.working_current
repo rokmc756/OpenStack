@@ -1,0 +1,57 @@
+[[local|localrc]]
+HOST_IP=192.168.1.71
+MULTI_HOST=1
+
+SERVICE_HOST=192.168.1.71
+MYSQL_HOST=192.168.1.71
+RABBIT_HOST=192.168.1.71
+GLANCE_HOSTPORT=192.168.1.71:9292
+
+
+ADMIN_PASSWORD=changeme
+DATABASE_PASSWORD=changeme
+RABBIT_PASSWORD=changeme
+SERVICE_PASSWORD=changeme
+
+
+ENABLED_SERVICES+=,neutron,q-svc,q-agt,q-dhcp,q-l3,q-meta
+ENABLED_SERVICES+=,mysql,rabbit,key
+ENABLED_SERVICES+=,g-api,g-reg
+disable_service c-vol
+disable_service n-cpu
+
+
+# NEUTRON CONFIG
+Q_USE_DEBUG_COMMAND=True
+
+
+## Neutron options
+Q_USE_SECGROUP=True
+FIXED_NETWORK_SIZE=4096
+FLOATING_RANGE="192.168.1.0/24"
+IPV4_ADDRS_SAFE_TO_USE="10.0.0.0/24"
+Q_FLOATING_ALLOCATION_POOL=start=192.168.1.230,end=192.168.1.250
+PUBLIC_NETWORK_GATEWAY=192.168.1.1
+PUBLIC_INTERFACE=ens224
+
+LOGFILE=/opt/stack/logs/stack.sh.log
+
+# Open vSwitch provider networking configuration
+# Q_USE_PROVIDERNET_FOR_PUBLIC=True
+# OVS_PHYSICAL_BRIDGE=br-ens224
+# PUBLIC_BRIDGE=br-ens224
+# OVS_BRIDGE_MAPPINGS=public:br-ens224
+
+Q_AGENT=openvswitch
+Q_ML2_PLUGIN_MECHANISM_DRIVERS=openvswitch,l2population
+Q_ML2_PLUGIN_EXT_DRIVERS=port_security
+SCHEDULER=nova.scheduler.chance.ChanceScheduler
+ENABLE_TENANT_VLANS=True
+ENABLE_TENANT_TUNNELS=True
+
+Q_ML2_TENANT_NETWORK_TYPE=vxlan
+
+
+# https://hackmd.io/@kC4NbD-HT-6-e8YY2e9KAw/H1gq7A7Pc
+# https://honggg0801.tistory.com/32
+# https://openthestack.wordpress.com/install-multi-node-setup/
