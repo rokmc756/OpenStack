@@ -47,6 +47,7 @@ init:	setup-host.yml update-host.yml
 	ansible-playbook -i ansible-hosts -u ${USERNAME} --ssh-common-args='-o UserKnownHostsFile=./known_hosts -o VerifyHostKeyDNS=true' install-ansible-prereqs.yml
 
 hosts:
+	ln -sf ansible-hosts-devstack ansible-hosts
 	make -f ./makefile_configs/Makefile.hosts r=${r} s=${s} c=${c} USERNAME=${USERNAME}
 
 rdo:

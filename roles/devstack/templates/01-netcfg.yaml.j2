@@ -1,0 +1,23 @@
+network:
+  ethernets:
+    ens192:
+      dhcp4: false
+      addresses: [{{ hostvars[inventory_hostname]['ansible_'~ netdev0]['ipv4']['address'] }}/{{ ( hostvars[inventory_hostname]['ansible_'~ netdev0]['ipv4']['address'] + '/' + hostvars[inventory_hostname]['ansible_'~ netdev0]['ipv4']['netmask'] ) | ansible.utils.ipaddr('prefix') }} ]
+      routes:
+        - to: default
+          via: {{ hostvars[inventory_hostname]['ansible_default_ipv4']['gateway'] }}
+      nameservers:
+        addresses: [192.168.0.90,192.168.0.100,8.8.8.8,168.126.63.1]
+        search: [jtest.pivotal.io]
+      dhcp6: false
+    ens224:
+      dhcp4: false
+      addresses: [{{ hostvars[inventory_hostname]['ansible_'~ netdev1]['ipv4']['address'] }}/{{ ( hostvars[inventory_hostname]['ansible_'~ netdev1]['ipv4']['address'] + '/' + hostvars[inventory_hostname]['ansible_'~ netdev1]['ipv4']['netmask'] ) | ansible.utils.ipaddr('prefix') }} ]
+      routes:
+        - to: default
+          via: {{ hostvars[inventory_hostname]['ansible_default_ipv4']['gateway'] }}
+      nameservers:
+        addresses: [192.168.0.90,192.168.0.100,8.8.8.8,168.126.63.1]
+        search: [jtest.pivotal.io]
+      dhcp6: false
+  version: 2

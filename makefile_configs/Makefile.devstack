@@ -2,10 +2,17 @@ devstack:
 	@if [ "${r}" = "prepare" ]; then\
 		ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-devstack.yml --tags='prepare';\
 	elif [ "${r}" = "install" ]; then\
-		ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-devstack.yml --tags='install';\
+                if [ ! -z ${r} ] && [ "${s}" = "controller" ]; then\
+                        ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-devstack.yml -e '{install_controller: True}' --tags='install';\
+                elif [ ! -z ${r} ] && [ "${s}" = "compute" ]; then\
+                        ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-devstack.yml -e '{install_compute: True}' --tags='install';\
+                else\
+                        echo "No Actions for Installing Controller or Compute Nodes";\
+                fi;\
 	elif [ "${r}" = "uninstall" ]; then\
 		ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-devstack.yml --tags='uninstall';\
 	else\
 		echo "No Actions for Devstack";\
 		exit;\
 	fi
+

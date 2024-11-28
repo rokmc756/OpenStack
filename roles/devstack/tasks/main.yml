@@ -1,8 +1,7 @@
 ---
 - name: Check OS ( Devstack )
-  fail: msg="Not a Red Hat based system!"
-  when: ansible_os_family != 'RedHat' or ansible_os_family != 'CentOS' or ansible_os_family != 'Rocky'
-
+  fail: msg="{{ ansible_os_family }} is not OS supported for This ansible Playbook"
+  when: ansible_os_family != 'RedHat' or ansible_os_family != 'CentOS' or ansible_os_family != 'Rocky' or ansible_os_family != 'Debian' or ansible_os_family != 'Ubuntu'
 
 - name: Set Facts for Package Name and List and Network Range
   import_tasks: set-devstack-facts.yml
@@ -16,17 +15,17 @@
 - name: Prepare Devstack Environment
   import_tasks: prepare-devstack.yml
   tags: prepare
-  when: inventory_hostname in groups['devstack']
+  when: inventory_hostname in groups['all']
 
 
 - name: Install Devstack
   import_tasks: install-devstack.yml
   tags: install
-  when: inventory_hostname in groups['devstack']
+  when: inventory_hostname in groups['all']
 
 
 - name: Uninstall Devstack
   import_tasks: uninstall-devstack.yml
   tags: uninstall
-  when: inventory_hostname in groups['devstack']
+  when: inventory_hostname in groups['all']
 

@@ -6,6 +6,7 @@
 - name: Disable Sysinit Network
   service: name=network enabled=no
   ignore_errors: true
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 - name: Delete Sysinit Network Scripts
@@ -19,7 +20,23 @@
     - "ifcfg-ens192"
     - "ifcfg-ens224"
     - "ifcfg-ens256"
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 - debug: msg={{ delete_sysinit_network_scripts }}
+  when: print_debug == true and ( ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky' )
+
+
+- name: Delete Netplan Scripts
+  become_user: root
+  file:
+    path: "/etc/netplan/{{ item }}"
+    state: absent
+  register: delete_netplan_scripts
+  ignore_errors: true
+  with_items:
+    - "01-netcfg.yaml"
+  when: ansible_os_family == 'Ubuntu' or ansible_os_family == 'Debian'
+- debug: msg={{ delete_netplan_scripts }}
+  when: print_debug == true and ( ansible_os_family == 'Ubuntu' or ansible_os_family == 'Debian' )
 
 
 #- name: Uninstall Sysinit Network Scripts
@@ -33,5 +50,6 @@
   shell: |
     yum --setopt=tsflags=noscripts remove -y network-scripts
   ignore_errors: true
-#  yum --setopt=tsflags=noscripts remove -y openstack-network-scripts
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
+  #  yum --setopt=tsflags=noscripts remove -y openstack-network-scripts
 

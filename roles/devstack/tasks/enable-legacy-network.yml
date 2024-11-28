@@ -3,6 +3,7 @@
   dnf:
     name: openstack-network-scripts
     state: present
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 - name: Configure IP Address with Sysinit Network Scripts
@@ -16,12 +17,30 @@
     - "ifcfg-ens192"
     - "ifcfg-ens224"
     - "ifcfg-ens256"
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 - debug: msg={{ configure_sysinit_network_scripts }}
+  when: print_debug == true and ( ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky' )
+
+
+- name: Configure IP Address with Netplan
+  become_user: root
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/netplan/{{ item }}"
+    mode: 0644
+  register: configure_netplan_scripts
+  with_items:
+    - "01-netcfg.yaml"
+  when: ansible_os_family == 'Ubuntu' or ansible_os_family == 'Debian'
+- debug: msg={{ configure_netplan_scripts }}
+  when: print_debug == true and ( ansible_os_family == 'Ubuntu' or ansible_os_family == 'Debian' )
 
 
 - name: Enable Sysinit Network
   service: name=network enabled=yes
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 - name: Disable NetworkManager
   service: name=NetworkManager enabled=no
+

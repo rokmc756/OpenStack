@@ -39,22 +39,33 @@
   ignore_errors: true
   args:
     executable: /bin/bash
-  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
+  # when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
   # sudo systemctl enable openvswitch
   # sudo systemctl start openvswitch
 
 
-- name: Configure Controller Node
-  import_tasks: config-controller.yml
-  when: install_controller is defined and install_controller == true and inventory_hostname in groups['controller']
+- name: Check if the Devstack Config Already Exists
+  stat: path=/opt/stack/devstack/local.conf
+  register: devstack_conf_exists
+- debug: msg={{ devstack_conf_exists }}
 
 
-- name: Configure Compute Node
-  import_tasks: config-compute.yml
-  when: install_compute is defined and install_compute == true and inventory_hostname in groups['compute']
+- name: Copy Local.conf
+  become_user: stack
+  template:
+    src: "{{ item }}.j2"
+    dest: "/opt/stack/devstack/local.conf"
+    mode: 0644
+  register: copy_local_conf
+  ignore_errors: true
+  with_items:
+    - "local.conf"
+  when: devstack_conf_exists.stat.exists != True and ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
+- debug: msg={{ copy_local_conf }}
+  when: print_debug == true and devstack_conf_exists.stat.exists != True and ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
-- name: Install Devstack Controller Node
+- name: Install Devstack
   become_user: stack
   shell: |
    ./stack.sh
@@ -62,16 +73,4 @@
   args:
     chdir: /opt/stack/devstack
     executable: /bin/bash
-  when: install_controller is defined and install_controller == true and inventory_hostname in groups['controller']
-
-
-- name: Install Devstack Compute Nodes
-  become_user: stack
-  shell: |
-   ./stack.sh
-  ignore_errors: true
-  args:
-    chdir: /opt/stack/devstack
-    executable: /bin/bash
-  when: install_compute is defined and install_compute == true and inventory_hostname in groups['compute']
 

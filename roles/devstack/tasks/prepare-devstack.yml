@@ -4,6 +4,7 @@
   with_items:
    - glibc-langpack-en
    - dnf-plugins-core
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 - name: Configure Language Pack
@@ -14,6 +15,7 @@
   with_items:
     - "LANG=en_US.utf-8"
     - "LC_ALL=en_US.utf-8"
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 - name: Create an Empty File for Devstack Sysctl Parameters
@@ -45,6 +47,7 @@
   ignore_errors: true
   args:
     executable: /bin/bash
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 - name: Stop Firewalld
@@ -56,6 +59,7 @@
     sudo dnf config-manager --enable crb
     sudo dnf config-manager --enable epel
     sudo dnf config-manager --enable devel             # Openstack Repository for Rocky Linux 9.x
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 #- name: Commented packages excluded for python3-neutron
@@ -67,19 +71,22 @@
 #  register: commented_packages_excluded
 #  with_items:
 #    - { regexp: "^exclude=", line: "#exclude=", state: present, backup: no }
+#  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 #- debug: msg={{ commented_packages_excluded }}
+#  when: print_debug == true and ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 #
 #
 # Upgrade packages to latest version
 #- name: Update All Packages
 #  package: name=* state=latest update_cache=yes
+#  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 #- name: Install Open Vswitch
 #  dnf:
 #    name: openvswitch3.4
 #    state: present
-
+#  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 - name: Enable Legacy Network
@@ -91,14 +98,6 @@
 #  import_tasks: disable-selinux.yml
 
 
-#- name: Add Stack User
-#  shell: |
-#    sudo adduser -s /bin/bash -d /opt/stack -m stack
-#  ignore_errors: true
-#  args:
-#    executable: /bin/bash
-
-
 - name: Add Stack User
   user:
     name: stack
@@ -106,7 +105,6 @@
     create_home: true
     home: /opt/stack
     state: present
-    # group: stack
 
 
 - name: Add Sudo User for Stack
@@ -143,15 +141,15 @@
   when: print_debug == true and devstack_dir_existed.stat.exists != True
 
 
-- name: Checkout the specific version
-  become_user: stack
-  shell: |
-    git checkout stable/2024.2
-  register: checkout_version
-  args:
-    chdir: /opt/stack/devstack
-- debug: msg={{ checkout_version }}
-  when: print_debug == true
+#- name: Checkout the specific version
+#  become_user: stack
+#  shell: |
+#    git checkout stable/2024.2
+#  register: checkout_version
+#  args:
+#    chdir: /opt/stack/devstack
+#- debug: msg={{ checkout_version }}
+#  when: print_debug == true
 
 
 # git checkout stable/xena

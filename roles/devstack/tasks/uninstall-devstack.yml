@@ -29,7 +29,9 @@
   ignore_errors: true
   with_items:
     - "remove-el9s-pkgs.sh"
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 - debug: msg={{ copy_uninstall_el9s_script }}
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 #- name: Remove EL9s RDO Packages Remained
@@ -39,10 +41,12 @@
 #  args:
 #    chdir: /root/
 #    executable: /bin/bash
+#  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 - name: Enable SELinux Policy
   import_tasks: enable-selinux.yml
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 - name: Disable Legacy Network
@@ -56,6 +60,7 @@
   ignore_errors: true
   with_items:
     - "httpd"
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 #    - "openvswitch3.4"
 
 
@@ -68,11 +73,23 @@
   ignore_errors: true
   args:
     executable: /bin/bash
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 - name: Start Firewalld
   service: name=firewalld state=started enabled=no
   ignore_errors: true
+
+
+- name: Kill Processes Hold On User Directory
+  shell: |
+    nohup pkill -U stack
+    sleep 3
+  register: kill_user_processes
+  ignore_errors: true
+  until: kill_user_processes is succeeded
+  retries: 10
+  # nohup fuser -k /opt/stack
 
 
 - name: Remove Stack User
@@ -96,5 +113,4 @@
 
 
 - meta: flush_handlers
-
 
