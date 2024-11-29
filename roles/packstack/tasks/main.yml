@@ -5,25 +5,26 @@
 
 
 - name: Set Facts for Package Name and List and Network Range
-  import_tasks: set-rdo-facts.yml
+  import_tasks: set-packstack-facts.yml
   tags:
     - prepare
-    - packstack
+    - install
     - uninstall
 
 
 - name: Prepare Environment
-  import_tasks: prepare-env.yml
+  import_tasks: prepare-environment.yml
   tags: prepare
 
 
 # https://computingforgeeks.com/install-and-configure-openstack-on-centos/
 - name: Run Packstack
-  import_tasks: run-packstack.yml
-  tags: packstack
+  import_tasks: install-packstack.yml
+  tags: install
 
 
 - name: Uninstall Packstack
-  import_tasks: uninstall.yml
+  import_tasks: uninstall-packstack.yml
   tags: uninstall
+
 

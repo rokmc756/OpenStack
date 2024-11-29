@@ -21,4 +21,3 @@ devstack:
 		echo "No Actions for Devstack";\
 		exit;\
 	fi
-

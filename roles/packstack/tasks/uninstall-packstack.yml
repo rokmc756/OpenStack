@@ -51,10 +51,10 @@
 
 - name: Uninstall Openstack Sysinit Network Scripts
   package:
-    name: openstack-network-scripts
+    name: network-scripts
     state: absent
   ignore_errors: true
-  # name: network-scripts
+  # name: openstack-network-scripts
 
 
 - name: Uninstall Openstack Packstack

@@ -27,11 +27,12 @@
 - name: Uninstall Devstack
   import_tasks: uninstall-devstack.yml
   tags: uninstall
-  when: uninstall_compute == true and inventory_hostname in groups['compute']
+  when: uninstall_compute is defined and uninstall_compute == true and inventory_hostname in groups['compute']
 
 
 - name: Uninstall Devstack
   import_tasks: uninstall-devstack.yml
   tags: uninstall
-  when: uninstall_controller == true and inventory_hostname in groups['controller']
+  when: uninstall_controller is defined and uninstall_controller == true and inventory_hostname in groups['controller']
+
 

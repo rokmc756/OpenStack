@@ -9,5 +9,9 @@ DATABASE_PASSWORD=$ADMIN_PASSWORD
 RABBIT_PASSWORD=$ADMIN_PASSWORD
 SERVICE_PASSWORD=$ADMIN_PASSWORD
 
+ENABLED_SERVICES+=,swift
+SWIFT_HASH=changeme
+SWIFT_REPLICAS=1
+
 # {{ hostvars[inventory_hostname][_netdev]['ipv4']['address'] | ipaddr('prefix') }}
-#
+

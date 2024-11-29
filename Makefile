@@ -50,9 +50,9 @@ hosts:
 	ln -sf ansible-hosts-devstack ansible-hosts
 	make -f ./makefile_configs/Makefile.hosts r=${r} s=${s} c=${c} USERNAME=${USERNAME}
 
-rdo:
-	ln -sf ansible-hosts-rdo ansible-hosts
-	make -f ./makefile_configs/Makefile.rdo r=${r} s=${s} c=${c} USERNAME=${USERNAME}
+packstack:
+	ln -sf ansible-hosts-packstack ansible-hosts
+	make -f ./makefile_configs/Makefile.packstack r=${r} s=${s} c=${c} USERNAME=${USERNAME}
 
 devstack:
 	ln -sf ansible-hosts-devstack ansible-hosts

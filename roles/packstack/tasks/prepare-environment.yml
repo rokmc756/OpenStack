@@ -4,6 +4,7 @@
   with_items:
    - glibc-langpack-en
    - dnf-plugins-core
+   # - epel-release
 
 
 - name: Configure Language Pack
@@ -37,31 +38,33 @@
 - name: Ensure the CRB Repository is Enabled for Rocky Instead of Powertools Provided by Red hat
   shell: |
     dnf config-manager --enable crb
-    dnf config-manager --enable epel
     dnf config-manager --enable devel                 # Openstack Repository for Rocky Linux 9.x
+    dnf config-manager --enable epel
+    # dnf config-manager --disable epel
 
 
 #- name: Uninstall Ansible
 #  package:
 #    name: ansible
 #    state: absent
+#    name: ansible-core
 
 
-- name: Commented packages excluded for python3-neutron
-  replace:
-    path: /etc/dnf/dnf.conf
-    regexp: "{{ item.regexp }}"
-    replace: "{{ item.line }}"
-    backup: "{{ item.backup }}"
-  register: commented_packages_excluded
-  with_items:
-    - { regexp: "^exclude=", line: "#exclude=", state: present, backup: no }
-- debug: msg={{ commented_packages_excluded }}
+#- name: Commented packages excluded for python3-neutron
+#  replace:
+#    path: /etc/dnf/dnf.conf
+#    regexp: "{{ item.regexp }}"
+#    replace: "{{ item.line }}"
+#    backup: "{{ item.backup }}"
+#  register: commented_packages_excluded
+#  with_items:
+#    - { regexp: "^exclude=", line: "#exclude=", state: present, backup: no }
+#- debug: msg={{ commented_packages_excluded }}
 
 
 # Upgrade packages to latest version
-- name: Update All Packages
-  package: name=* state=latest update_cache=yes
+#- name: Update All Packages
+#  package: name=* state=latest update_cache=yes
 
 
 ### For example of CentOS Stream 9
@@ -100,9 +103,9 @@
 
 - name: Install Openstack Sysinit Network Scripts
   dnf:
-    name: openstack-network-scripts
+    name: network-scripts
     state: present
-    # name: network-scripts
+    # name: openstack-network-scripts
 
 
 # python3-eventlet-doc

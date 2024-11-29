@@ -31,7 +31,8 @@
     - "remove-el9s-pkgs.sh"
   when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 - debug: msg={{ copy_uninstall_el9s_script }}
-  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
+  ignore_errors: true
+  when: print_debug == true and ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
 #- name: Remove EL9s RDO Packages Remained
@@ -46,7 +47,7 @@
 
 - name: Enable SELinux Policy
   import_tasks: enable-selinux.yml
-  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Rocky"
 
 
 - name: Disable Legacy Network
