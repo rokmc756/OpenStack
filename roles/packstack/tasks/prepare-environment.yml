@@ -103,9 +103,9 @@
 
 - name: Install Openstack Sysinit Network Scripts
   dnf:
-    name: network-scripts
+    name: openstack-network-scripts
     state: present
-    # name: openstack-network-scripts
+  # name: network-scripts
 
 
 # python3-eventlet-doc

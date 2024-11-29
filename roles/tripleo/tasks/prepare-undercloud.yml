@@ -58,18 +58,18 @@
     sudo dnf config-manager --disable devel                 # Openstack Repository for Rocky Linux 9.x
 
 
-#- name: Commented packages excluded for python3-neutron
-#  replace:
-#    path: /etc/dnf/dnf.conf
-#    regexp: "{{ item.regexp }}"
-#    replace: "{{ item.line }}"
-#    backup: "{{ item.backup }}"
-#  register: commented_packages_excluded
-#  with_items:
-#    - { regexp: "^exclude=", line: "#exclude=", state: present, backup: no }
-#- debug: msg={{ commented_packages_excluded }}
-#
-#
+- name: Commented packages excluded for python3-neutron
+  replace:
+    path: /etc/dnf/dnf.conf
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.line }}"
+    backup: "{{ item.backup }}"
+  register: commented_packages_excluded
+  with_items:
+    - { regexp: "^exclude=", line: "#exclude=", state: present, backup: no }
+- debug: msg={{ commented_packages_excluded }}
+
+
 # Upgrade packages to latest version
 #- name: Update All Packages
 #  package: name=* state=latest update_cache=yes
@@ -132,26 +132,27 @@
 
 
 # --single-branch --branch release-{{ devstack.major_version }}.{{ devstack.minor_version }}
-- name: Clone Devstack Source Code
-  become_user: stack
-  shell: |
-    git -C "/opt/stack" clone https://git.openstack.org/openstack-dev/devstack
-  register: git_clone_devstack
-  ignore_errors: true
-  when: devstack_dir_existed.stat.exists != True
-- debug: msg={{ git_clone_devstack }}
-  when: print_debug == true and devstack_dir_existed.stat.exists != True
+#- name: Clone Devstack Source Code
+#  become_user: stack
+#  shell: |
+#    git -C "/opt/stack" clone https://git.openstack.org/openstack-dev/devstack
+#  register: git_clone_devstack
+#  ignore_errors: true
+#  when: devstack_dir_existed.stat.exists != True
+#- debug: msg={{ git_clone_devstack }}
+#  when: print_debug == true and devstack_dir_existed.stat.exists != True
+#
+#
+#- name: Checkout the specific version
+#  become_user: stack
+#  shell: |
+#    git checkout stable/2024.2
+#  register: checkout_version
+#  args:
+#    chdir: /opt/stack/devstack
+#- debug: msg={{ checkout_version }}
+#  when: print_debug == true
 
-
-- name: Checkout the specific version
-  become_user: stack
-  shell: |
-    git checkout stable/2024.2
-  register: checkout_version
-  args:
-    chdir: /opt/stack/devstack
-- debug: msg={{ checkout_version }}
-  when: print_debug == true
 
 
 # git checkout stable/xena

@@ -1,7 +1,8 @@
 ---
 - name: Check OS ( Devstack )
   fail: msg="{{ ansible_os_family }} is not OS supported for This ansible Playbook"
-  when: ansible_os_family != 'RedHat' or ansible_os_family != 'CentOS' or ansible_os_family != 'Rocky' or ansible_os_family != 'Debian' or ansible_os_family != 'Ubuntu'
+  when: ansible_os_family != 'Debian' or ansible_os_family != 'Ubuntu'
+
 
 - name: Set Facts for Package Name and List and Network Range
   import_tasks: set-devstack-facts.yml

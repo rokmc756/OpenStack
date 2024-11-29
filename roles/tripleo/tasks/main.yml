@@ -5,7 +5,7 @@
 
 
 - name: Set Facts for Package Name and List and Network Range
-  import_tasks: set-devstack-facts.yml
+  import_tasks: set-tripleo-facts.yml
   tags:
     - prepare
     - install

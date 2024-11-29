@@ -1,6 +1,6 @@
 ---
-- name: Check OS ( RDO )
-  fail: msg="Not a Red Hat based system!"
+- name: Check OS ( Packstack )
+  fail: msg="{{ ansible_os_family }} is not OS supported for This ansible Playbook"
   when: ansible_os_family != 'RedHat' or ansible_os_family != 'CentOS' or ansible_os_family != 'Rocky'
 
 
@@ -26,5 +26,4 @@
 - name: Uninstall Packstack
   import_tasks: uninstall-packstack.yml
   tags: uninstall
-
 

@@ -49,21 +49,21 @@
 - debug: msg={{ delete_sysinit_network_scripts }}
 
 
+
+#- name: Uninstall Openstack Sysinit Network Scripts
+#  package:
+#    name: network-scripts
+#    state: absent
+#  ignore_errors: true
+#  # name: openstack-network-scripts
+
+
 - name: Uninstall Openstack Sysinit Network Scripts
-  package:
-    name: network-scripts
-    state: absent
+  shell: |
+    yum --setopt=tsflags=noscripts remove -y openstack-network-scripts
   ignore_errors: true
-  # name: openstack-network-scripts
-
-
-- name: Uninstall Openstack Packstack
-  package:
-    name: "{{ item }}"
-    state: present
-  ignore_errors: true
-  with_items:
-    - python3-gpid-proton
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
+  # yum --setopt=tsflags=noscripts remove -y network-scripts
 
 
 - name: Uninstall Openstack Packstack
