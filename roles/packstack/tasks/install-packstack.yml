@@ -45,6 +45,7 @@
     - { regexp: "^CONFIG_NEUTRON_OVS_BRIDGE_IFACES=*",               line: "CONFIG_CONFIG_NEUTRON_OVS_BRIDGE_IFACES=br-ex:{{ netdev1 }}", state: present }  # External
     - { regexp: "^CONFIG_NEUTRON_OVS_TUNNEL_IF=*",                   line: "CONFIG_CONFIG_NEUTRON_OVS_TUNNEL_IF={{ netdev2 }}", state: present }            # Internal
     # - { regexp: "^CONFIG_NETWORK_HOSTS=*",                           line: "CONFIG_NETWORK_HOSTS={{ control_ipaddrs }}",     state: present }
+    # https://hyungyoul.tistory.com/10
 
 
     # Not OK
@@ -232,6 +233,9 @@
 # CONFIG_AMQP_HOST=192.168.1.181
 # CONFIG_MARIADB_HOST=192.168.1.181
 # CONFIG_REDIS_HOST=192.168.1.181
+
+
+
 
 
 
