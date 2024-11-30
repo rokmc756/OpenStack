@@ -110,12 +110,12 @@
   dnf:
     name: "centos-release-openstack-{{ rdo.release_name }}"
     state: absent
-#  ignore_errors: true
+  ignore_errors: true
 
 
 #- name: Disable and Uninstall Openstack Repository
 #  dnf:
-#    name: "rdo-release-{{ rdo.release_name }}"
+#    name: "rdo-release-{{ rdo.release_name }}-1"
 #    state: absent
 #  ignore_errors: true
 
@@ -137,9 +137,10 @@
 - name: Ensure the CRB Repository is Disable for Rocky Instead of Powertools Provided by Red hat
   shell: |
     dnf config-manager --disable crb
-    dnf config-manager --enable epel
-    dnf config-manager --disable devel
+    dnf config-manager --disable epel
+    dnf config-manager --disable epel-next
   ignore_errors: true
+  #  dnf config-manager --disable devel
 
 
   # iptables -F

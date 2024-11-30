@@ -5,7 +5,7 @@ ansible_become_pass: "changeme"
 # sudo_group: "jomoon"
 # local_sudo_user: "jomoon"
 
-sudo_user: "rdosadm"
+sudo_user: "rdoadm"
 sudo_group: "rdoadm"
 local_sudo_user: "jomoon"
 wheel_group: "wheel"            # RHEL / CentOS / Rocky / SUSE / OpenSUSE
