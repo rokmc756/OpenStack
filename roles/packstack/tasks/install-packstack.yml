@@ -30,13 +30,20 @@
     line: "{{ item.line }}"
     state: "{{ item.state }}"
   with_items:
+    - { regexp: "^CONFIG_HORIZON_SSL=n",                             line: "CONFIG_HORIZON_SSL=y", state: present }
+    - { regexp: "^CONFIG_NTP_SERVERS=*",                             line: "CONFIG_NTP_SERVERS=kr.pool.ntp.org", state: present }
     - { regexp: "^CONFIG_PROVISION_DEMO=y",                          line: "CONFIG_PROVISION_DEMO=n", state: present }
     - { regexp: "^CONFIG_AODH_INSTALL=*",                            line: "CONFIG_AODH_INSTALL=n",  state: present }
     - { regexp: "^CONFIG_SWIFT_INSTALL=y",                           line: "CONFIG_SWIFT_INSTALL=n",  state: present }
     - { regexp: "^CONFIG_CEILOMETER_INSTALL=y",                      line: "CONFIG_CEILOMETER_INSTALL=n",  state: present }
     - { regexp: "^CONFIG_CINDER_INSTALL=y",                          line: "CONFIG_CINDER_INSTALL=n",  state: present }
-    - { regexp: "^CONFIG_CONTROLLER_HOST=*",                         line: "CONFIG_CONTROLLER_HOST={{ control_ipaddrs }} ",  state: present }
+    - { regexp: "^CONFIG_CONTROLLER_HOST=*",                         line: "CONFIG_CONTROLLER_HOST={{ control_ipaddrs }}",  state: present }
     - { regexp: "^CONFIG_COMPUTE_HOSTS=*",                           line: "CONFIG_COMPUTE_HOSTS={{ compute_ipaddrs }}",     state: present }
+    - { regexp: "^CONFIG_NETWORK_HOSTS=*",                           line: "CONFIG_NETWORK_HOSTS={{ network_ipaddrs }}",     state: present }
+    - { regexp: "^CONFIG_STORAGE_HOST=*",                            line: "CONFIG_STORAGE_HOST={{ storage_ipaddrs }}",      state: present }
+    - { regexp: "^CONFIG_AMQP_HOST=*",                               line: "CONFIG_AMQP_HOST={{ amqp_ipaddrs }}",         state: present }
+    - { regexp: "^CONFIG_MARIADB_HOST=*" ,                           line: "CONFIG_MARIADB_HOST={{ mariadb_ipaddrs }}",      state: present }
+    - { regexp: "^CONFIG_REDIS_HOST=*",                              line: "CONFIG_REDIS_HOST={{ redis_ipaddrs }}",        state: present }
     - { regexp: "^CONFIG_LBAAS_INSTALL=*",                           line: "CONFIG_LBAAS_INSTALL=y", state: present }
     - { regexp: "^CONFIG_HEAT_INSTALL=*",                            line: "CONFIG_HEAT_INSTALL=y", state: present }
     - { regexp: "^CONFIG_KEYSTONE_ADMIN_PW=*",                       line: "CONFIG_KEYSTONE_ADMIN_PW=changeme", state: present }
@@ -44,7 +51,6 @@
     - { regexp: "^CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=*",             line: "CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=extnet:br-ex", state: present }
     - { regexp: "^CONFIG_NEUTRON_OVS_BRIDGE_IFACES=*",               line: "CONFIG_CONFIG_NEUTRON_OVS_BRIDGE_IFACES=br-ex:{{ netdev1 }}", state: present }  # External
     - { regexp: "^CONFIG_NEUTRON_OVS_TUNNEL_IF=*",                   line: "CONFIG_CONFIG_NEUTRON_OVS_TUNNEL_IF={{ netdev2 }}", state: present }            # Internal
-    # - { regexp: "^CONFIG_NETWORK_HOSTS=*",                           line: "CONFIG_NETWORK_HOSTS={{ control_ipaddrs }}",     state: present }
     # https://hyungyoul.tistory.com/10
 
 
@@ -61,8 +67,6 @@
 
     # - { regexp: "^CONFIG_SSH_KEY=*$",                                line: "CONFIG_SSH_KEY=/root/.ssh/id_rsa.pub",               state: present }
     # - { regexp: "^CONFIG_DEFAULT_PASSWORD=*$",                       line: "CONFIG_DEFAULT_PASSWORD=changeme",                   state: present }
-    # - { regexp: "^CONFIG_HORIZON_SSL=n",                             line: "CONFIG_HORIZON_SSL=y", state: present }
-    # - { regexp: "^CONFIG_NTP_SERVERS=*",                             line: "CONFIG_NTP_SERVERS=kr.pool.ntp.org", state: present }
     #
     #
     # - { regexp: "^CONFIG_CEILOMETER_INSTALL=*",                 line: "CONFIG_CEILOMETER_INSTALL=n", state: present }
@@ -148,10 +152,7 @@
 
 
 # - { regexp: "^CONFIG_NEUTRON_OVN_TUNNEL_IF=*",  line: "CONFIG_NEUTRON_OVN_TUNNEL_IF=xxx", state: present }
-# - { regexp: "^CONFIG_STORAGE_HOST=*",           line: "CONFIG_STORAGE_HOST={{ control_node_ipaddr }}",      state: present }
-# - { regexp: "^CONFIG_AMQP_HOST=*",              line: "CONFIG_AMQP_HOST={{ control_node_ipaddr }}",         state: present }
-# - { regexp: "^CONFIG_REDIS_HOST=*",             line: "CONFIG_REDIS_HOST={{ control_node_ipaddr }}",        state: present }
-#
+
 # - { regexp: "^CONFIG_DEFAULT_PASSWORD=*",       line: "CONFIG_DEFAULT_PASSWORD=changeme", state: present }
 # - { regexp: "^CONFIG_VCENTER_PASSWORD=*",       line: "CONFIG_VCENTER_PASSWORD=changeme", state: present }
 # - { regexp: "^CONFIG_AMQP_AUTH_PASSWORD=*",                 line: "CONFIG_AMQP_AUTH_PASSWORD=changeme", state: present }
@@ -180,7 +181,6 @@
 # CONFIG_GNOCCHI_DB_PW=c071e5ef581d495a
 # CONFIG_GNOCCHI_KS_PW=ea26c857a7964dee
 
-# - { regexp: "^CONFIG_MARIADB_HOST=*" ,     line: "CONFIG_MARIADB_HOST={{ control_node_ipaddr }}",      state: present }
 # - { regexp: "^CONFIG_SSH_KEY=*",           line: "CONFIG_SSH_KEY=/root/.ssh/id_rsa.pub",               state: present }
 # - { regexp: "^CONFIG_DEFAULT_PASSWORD=*",  line: "CONFIG_DEFAULT_PASSWORD=changeme",                   state: present }
 # - { regexp: "^CONFIG_CONTROLLER_HOST=*",   line: "CONFIG_CONTROLLER_HOST={{ control_node_ipaddr }} ",  state: present }
