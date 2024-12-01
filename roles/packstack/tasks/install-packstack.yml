@@ -21,6 +21,7 @@
 - name: Generate RDO the answer file
   shell: packstack --gen-answer-file=/root/rdo-scripts/rdo-answer.txt
   ignore_errors: yes
+  when: inventory_hostname in groups['control']
 
 
 - name: Replace all IPs with the IP available for access to the dashboard
@@ -46,13 +47,14 @@
     - { regexp: "^CONFIG_NEUTRON_OVS_BRIDGE_IFACES=*",               line: "CONFIG_CONFIG_NEUTRON_OVS_BRIDGE_IFACES=br-ex:{{ netdev1 }}", state: present }  # External
     - { regexp: "^CONFIG_NEUTRON_OVS_TUNNEL_IF=*",                   line: "CONFIG_CONFIG_NEUTRON_OVS_TUNNEL_IF={{ netdev2 }}", state: present }            # Internal
     - { regexp: "^CONFIG_SWIFT_KS_PW=*",                             line: "CONFIG_SWIFT_KS_PW=changeme", state: present }
-    - { regexp: "^CONFIG_SWIFT_STORAGES=*",                          line: "CONFIG_SWIFT_STORAGES=/dev/sdb,/dev/sdc", state: present }
+    - { regexp: "^CONFIG_SWIFT_STORAGES=*",                          line: "CONFIG_SWIFT_STORAGES=/dev/nvme0n1,/dev/nvme0n2", state: present }
     - { regexp: "^CONFIG_SWIFT_STORAGE_ZONES=*",                     line: "CONFIG_SWIFT_STORAGE_ZONES=1", state: present }
     - { regexp: "^CONFIG_SWIFT_STORAGE_REPLICAS=*",                  line: "CONFIG_SWIFT_STORAGE_REPLICAS=1", state: present }
     - { regexp: "^CONFIG_SWIFT_STORAGE_FSTYPE=*",                    line: "CONFIG_SWIFT_STORAGE_FSTYPE=xfs", state: present }
     - { regexp: "^CONFIG_SWIFT_HASH=*",                              line: "CONFIG_SWIFT_HASH=changeme", state: present }
     - { regexp: "^CONFIG_SWIFT_STORAGE_SIZE=*",                      line: "CONFIG_SWIFT_STORAGE_SIZE=2G", state: present }
     - { regexp: "^CONFIG_CEILOMETER_INSTALL=y",                      line: "CONFIG_CEILOMETER_INSTALL=n",  state: present }
+  when: inventory_hostname in groups['control']
 
 
 # - { regexp: "^CONFIG_AMQP_HOST=*",                               line: "CONFIG_AMQP_HOST={{ amqp_ipaddrs }}",         state: present }
@@ -117,6 +119,7 @@
 #  ignore_errors: true
 #  when: inventory_hostname in groups['control']
 #- debug: msg="{{ run_packstack}}"
+#  when: print_debug == true and inventory_hostname in groups['control']
 #  shell: packstack --allinone --provision-demo=n --provision-ovs-bridge=n --debug -t 3600
 
 

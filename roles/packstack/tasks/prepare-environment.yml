@@ -40,8 +40,9 @@
     dnf config-manager --enable crb
     dnf config-manager --disable epel
     dnf config-manager --disable epel-next
-    # dnf config-manager --enable devel                 # Openstack Repository for Rocky Linux 9.x
-
+    dnf config-manager --enable devel                  # Openstack Repository for Rocky Linux 9.x
+  ignore_errors: true
+  #  dnf config-manager --disable devel                 # Openstack Repository for Rocky Linux 9.x
 
 - name: Commented packages excluded for python3-neutron
   replace:
