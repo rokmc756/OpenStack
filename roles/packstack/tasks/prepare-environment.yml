@@ -40,15 +40,7 @@
     dnf config-manager --enable crb
     dnf config-manager --disable epel
     dnf config-manager --disable epel-next
-    # dnf config-manager --disable epel
     # dnf config-manager --enable devel                 # Openstack Repository for Rocky Linux 9.x
-
-
-#- name: Uninstall Ansible
-#  package:
-#    name: ansible
-#    state: absent
-#    name: ansible-core
 
 
 - name: Commented packages excluded for python3-neutron
@@ -66,12 +58,6 @@
 # Upgrade packages to latest version
 #- name: Update All Packages
 #  package: name=* state=latest update_cache=yes
-
-
-## For example of CentOS Stream 9
-## Zed centos-release-openstack-zed
-## 2023.1 Antelope centos-release-openstack-antelope
-## 2023.2 Bobcat centos-release-openstack-bobcat
 
 
 - name: Enable Openstack Repository
@@ -97,23 +83,15 @@
     - openstack-packstack
     - leatherman
 
-  #  - openstack-selinux
-  #  - openstack-ansible-core
-  #  - python3-openstackclient
-  #  - python-gpid-proton
-
 
 - name: Install Openstack Sysinit Network Scripts
   dnf:
     name: openstack-network-scripts
     state: present
-  # name: network-scripts
-
-
+# network-scripts
 # python3-eventlet-doc
 # python3-gunicorn+eventlet
 # python3-gunicorn
-
 
 
 - name: Configure IP Address with Sysinit Network Scripts
@@ -138,7 +116,6 @@
   service: name=NetworkManager enabled=no
 
 
-# No need due to RDO requires SELinux Permissive
 - name: Disable SELinux Policy
   import_tasks: disable-selinux.yml
 
@@ -147,6 +124,18 @@
   shell: |
     dnf remove -y iptables-services-1.8.10-5.1.el9.next.noarch
   ignore_errors: true
+
+
+- name: Create Swift Directory
+  file:
+    path: "/opt/swift-dir"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  register: create_swift_dir
+- debug: msg={{ create_swift_dir }}
+  when: print_debug == true
 
 
 - name: Reboot Required

@@ -52,10 +52,10 @@
 
 #- name: Uninstall Openstack Sysinit Network Scripts
 #  package:
+#    name: openstack-network-scripts
 #    name: network-scripts
 #    state: absent
 #  ignore_errors: true
-#  # name: openstack-network-scripts
 
 
 - name: Uninstall Openstack Sysinit Network Scripts
@@ -63,7 +63,6 @@
     yum --setopt=tsflags=noscripts remove -y openstack-network-scripts
   ignore_errors: true
   when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
-  # yum --setopt=tsflags=noscripts remove -y network-scripts
 
 
 - name: Uninstall Openstack Packstack
@@ -73,13 +72,6 @@
   ignore_errors: true
   with_items:
     - leatherman
-
-
-#- name: Uninstall Openstack Sysinit Network Scripts
-#  shell: |
-#    yum --setopt=tsflags=noscripts remove -y openstack-network-scripts
-#    yum --setopt=tsflags=noscripts remove -y network-scripts
-#  ignore_errors: true
 
 
 - name: Uninstall Openstack Packstack
@@ -143,9 +135,21 @@
   #  dnf config-manager --disable devel
 
 
-  # iptables -F
-  # sh -c '/sbin/iptables-save > /etc/sysconfig/iptables'
-  # cat /etc/sysconfig/iptables
+# iptables -F
+# sh -c '/sbin/iptables-save > /etc/sysconfig/iptables'
+# cat /etc/sysconfig/iptables
+
+
+- name: Delete Swift Directory
+  become_user: root
+  file:
+    path: "{{ item }}"
+    state: absent
+  register: delete_swift_dir
+  with_items:
+    - "/root/rdo-scripts/rdo-answer.txt"
+    - "/opt/swift-dir"
+- debug: msg={{ delete_swift_dir }}
 
 
 - name: Reboot Required
