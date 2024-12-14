@@ -1,8 +1,110 @@
+## What is this Ansible Playbook for OpenStack
+It is Ansible Playbook to deploy OpenStack by Packstack and Devstack for Rocky/CentOS 9.x and Ubuntu 22.x.
+The purpose of this is only for development environment not production.
+
+## Openstack Architecutre
+![alt text]()
+
+## Supported Platform and OS
+Virtual Machines\
+Baremetal\
+RHEL and CentOS 9 and Rocky Linux 9.x\
+Ubuntu 22.x
+
+## Prerequisite for ansible host
+MacOS or Windows Linux Subsysetm or Many kind of Linux Distributions should have ansible as ansible host.\
+Supported OS for ansible target host should be prepared with package repository configured such as yum, dnf and apt\
+
+## Prepare Ansible Host to run this Ansible Playbook
+* MacOS
+```
+$ xcode-select --install
+$ brew install ansible
+$ brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
+```
+
+* Fedora/CentOS/RHEL, Ubuntu, OpenSUSE
+```
+$ yum install ansible
+$ apt install ansible
+```
+
+## How to Deploy and Destroy OpenStack by Packstack or DevStack
+#### 1) Configure Variables and Inventory with Hostnames, IP Addresses, sudo Username and Password
+##### Configure Inventory for Devstack
+```
+$ vi ansible-hosts-devstack
+[all:vars]
+ssh_key_filename="id_rsa"
+remote_machine_username="jomoon"
+remote_machine_password="changeme"
+ansible_python_interpreter=/usr/bin/python3
+
+[controller]
+ubt22-rdo01 ansible_ssh_host=192.168.1.171
+
+[compute]
+ubt22-rdo02 ansible_ssh_host=192.168.1.172
+ubt22-rdo03 ansible_ssh_host=192.168.1.173
+```
+
+##### Configure Variables for Devstack
+```
+```
+
+##### Configure Global Variables
+```
+```
+
+
+#### 1) Deploy OpenStack by Devstack
+```
+$ vi setup-devstack.yml
+---
+- hosts: all
+  become: yes
+  vars:
+    print_debug: true
+  roles:
+
+
+$ make prepare
+$ make devstack r=install s=controller
+$ make devstack r=install s=compute
+
+$ make devstack r=uninstall s=compute
+$ make devstack r=uninstall s=controller
+
+```
+
+
+#### 2) Deploy and Destroy OpenStack by Packstack
+```
+$ vi setup-packstack.yml
+---
+- hosts: all
+  become: yes
+  vars:
+    print_debug: true
+  roles:
+    - packstack
+
+
+$ make packstack r=prepare
+$ make packstack r=install
+
+$ make packstack r=uninstall
+```
 
 
 
-[ References ]
+## Similar Playbook
 
+## TODO
+
+## Debugging
+
+## References
 * OVS-DPDK
   - https://docs.napatech.com/r/Getting-Started-with-Napatech-Link-VirtualizationTM-Software/Enabling-IOMMU
 
@@ -43,28 +145,4 @@
 
 * RHOSP 16 with Multiple Nodes
   - https://www.linkedin.com/pulse/how-deploy-openstack-16-train-platform-using-packstack-goran-jumi%C4%87/
-
-[ Packstack Deploy Error ]
-~~~
-[root@rk9-node01 rdo-scripts]# dnf install openstack-neutron-common
-Last metadata expiration check: 0:51:59 ago on Fri 22 Nov 2024 08:36:43 PM KST.
-Error:
- Problem: package python3-neutron-1:25.0.0-2.el9s.noarch from openstack-dalmatian requires python3.9dist(ovsdbapp) >= 2.7.1, but none of the providers can be installed
-  - package openstack-neutron-common-1:25.0.0-2.el9s.noarch from openstack-dalmatian requires python3-neutron = 1:25.0.0-2.el9s, but none of the providers can be installed
-  - package python3-ovsdbapp-2.8.0-1.el9s.noarch from openstack-dalmatian requires python3-openvswitch, but none of the providers can be installed
-  - conflicting requests
-  - package python3-rdo-openvswitch-2:3.3-1.el9s.noarch from openstack-dalmatian is filtered out by exclude filtering
-(try to add '--skip-broken' to skip uninstallable packages or '--nobest' to use not only best candidate packages)
-
-[root@rk9-node01 rdo-scripts]# /usr/bin/dnf install openstack-neutron
-Last metadata expiration check: 0:53:09 ago on Fri 22 Nov 2024 08:36:43 PM KST.
-Error:
- Problem: package openstack-neutron-common-1:25.0.0-2.el9s.noarch from openstack-dalmatian requires python3-neutron = 1:25.0.0-2.el9s, but none of the providers can be installed
-  - package python3-neutron-1:25.0.0-2.el9s.noarch from openstack-dalmatian requires python3.9dist(ovsdbapp) >= 2.7.1, but none of the providers can be installed
-  - package openstack-neutron-1:25.0.0-2.el9s.noarch from openstack-dalmatian requires openstack-neutron-common = 1:25.0.0-2.el9s, but none of the providers can be installed
-  - package python3-ovsdbapp-2.8.0-1.el9s.noarch from openstack-dalmatian requires python3-openvswitch, but none of the providers can be installed
-  - conflicting requests
-  - package python3-rdo-openvswitch-2:3.3-1.el9s.noarch from openstack-dalmatian is filtered out by exclude filtering
-(try to add '--skip-broken' to skip uninstallable packages or '--nobest' to use not only best candidate packages)
-~~~
 

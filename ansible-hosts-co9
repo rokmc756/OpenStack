@@ -4,17 +4,27 @@ remote_machine_username="jomoon"
 remote_machine_password="changeme"
 ansible_python_interpreter=/usr/bin/python3
 
-[docker-repo]
-harbor ansible_ssh_host=192.168.0.160
 
-[master]
-co7-master ansible_ssh_host=192.168.0.81
+[control]
+co9-node01 ansible_ssh_host=192.168.1.181
 
-[slave]
-co7-slave ansible_ssh_host=192.168.0.82
+[compute]
+co9-node02 ansible_ssh_host=192.168.1.182
+co9-node03 ansible_ssh_host=192.168.1.183
 
-[kubernetes-cluster]
-co7-node01 ansible_ssh_host=192.168.0.83
-co7-node02 ansible_ssh_host=192.168.0.84
-co7-node03 ansible_ssh_host=192.168.0.85
+[network]
+co9-node04 ansible_ssh_host=192.168.1.184
+co9-node05 ansible_ssh_host=192.168.1.185
+
+[storage]
+co9-node06 ansible_ssh_host=192.168.1.186
+
+[amqp]
+co9-node07 ansible_ssh_host=192.168.1.187
+
+[mariadb]
+co9-node07 ansible_ssh_host=192.168.1.187
+
+[redis]
+co9-node07 ansible_ssh_host=192.168.1.187
 

@@ -21,29 +21,6 @@
   command: sysctl --system
 
 
-- name: Install WSGI Python Module
-  become_user: root
-  shell: |
-    dnf install -y mod_wsgi
-    dnf install -y openvswitch3.4
-  ignore_errors: true
-  args:
-    executable: /bin/bash
-  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
-
-
-- name: Enable Open Vswitch
-  shell: |
-    sudo systemctl start ovs-vswitchd
-    sudo systemctl start ovsdb-server
-  ignore_errors: true
-  args:
-    executable: /bin/bash
-  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
-  # sudo systemctl enable openvswitch
-  # sudo systemctl start openvswitch
-
-
 - name: Configure Controller Node
   import_tasks: config-controller.yml
   when: install_controller is defined and install_controller == true and inventory_hostname in groups['controller']

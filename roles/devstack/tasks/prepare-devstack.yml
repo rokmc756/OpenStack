@@ -1,23 +1,4 @@
 ---
-- name: Install Language Pack
-  package: name={{item}} state=present
-  with_items:
-   - glibc-langpack-en
-   - dnf-plugins-core
-  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
-
-
-- name: Configure Language Pack
-  lineinfile:
-    path: /etc/environment
-    line: "{{ item }}"
-    state: present
-  with_items:
-    - "LANG=en_US.utf-8"
-    - "LC_ALL=en_US.utf-8"
-  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
-
-
 - name: Create an Empty File for Devstack Sysctl Parameters
   copy:
     content: ""
@@ -40,52 +21,13 @@
   command: sysctl --system
 
 
-- name: Install WSGI Python Module
-  become_user: root
-  shell: |
-    dnf install -y mod_wsgi
-  ignore_errors: true
-  args:
-    executable: /bin/bash
-  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
-
-
 - name: Stop Firewalld
   service: name=firewalld state=stopped enabled=no
 
 
-- name: Ensure the CRB Repository is Enabled for Rocky Instead of Powertools Provided by Red hat
-  shell: |
-    sudo dnf config-manager --enable crb
-    sudo dnf config-manager --enable epel
-    sudo dnf config-manager --enable devel             # Openstack Repository for Rocky Linux 9.x
-  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
-
-
-#- name: Commented packages excluded for python3-neutron
-#  replace:
-#    path: /etc/dnf/dnf.conf
-#    regexp: "{{ item.regexp }}"
-#    replace: "{{ item.line }}"
-#    backup: "{{ item.backup }}"
-#  register: commented_packages_excluded
-#  with_items:
-#    - { regexp: "^exclude=", line: "#exclude=", state: present, backup: no }
-#  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
-#- debug: msg={{ commented_packages_excluded }}
-#  when: print_debug == true and ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
-#
-#
-# Upgrade packages to latest version
+#  Upgrade packages to latest version
 #- name: Update All Packages
 #  package: name=* state=latest update_cache=yes
-#  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
-
-
-#- name: Install Open Vswitch
-#  dnf:
-#    name: openvswitch3.4
-#    state: present
 #  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
 
 
@@ -93,7 +35,7 @@
   import_tasks: enable-legacy-network.yml
 
 
-# No need due to RDO requires SELinux Permissive
+#  No need due to RDO requires SELinux Permissive
 #- name: Disable SELinux Policy
 #  import_tasks: disable-selinux.yml
 
