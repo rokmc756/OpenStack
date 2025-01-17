@@ -31,6 +31,22 @@ temp:
 		else\
 			echo "No actions to prepare/clean temp";\
 		fi;\
+	elif [ "${r}" = "config" ] || [ "${r}" = "deconfig" ]; then\
+		if [ ! -z ${r} ] && [ "${s}" != "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-temp.yml -e '{"${s}": True}' --tags='${r}';\
+			else\
+				echo "No actions to config/deconfig temp";\
+			fi\
+		elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-temp.yml -e '{temp_all: True}' --tags='${r}';\
+			else\
+				echo "No actions to config/deconfig temp";\
+			fi\
+		else\
+			echo "No actions to config/deconfig temp";\
+		fi;\
 	elif [ "${r}" = "enable" ] || [ "${r}" = "disable" ]; then\
 		if [ ! -z ${r} ] && [ "${s}" != "all" ]; then\
 			if [ -z ${c} ];  then\

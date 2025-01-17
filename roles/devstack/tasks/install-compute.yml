@@ -1,56 +1,12 @@
 ---
-- name: Create an Empty File for Devstack Sysctl Parameters
-  copy:
-    content: ""
-    dest: /etc/sysctl.d/99-sysctl-devstack.conf
-    force: no
-
-
-- name: Configure Sysctl Parameters for Devstack
-  lineinfile:
-    path: /etc/sysctl.d/99-sysctl-devstack.conf
-    line: "{{ item }}"
-  with_items:
-    - "vm.overcommit_memory = 1"
-    - "net.ipv4.ip_forward = 1"
-    - "net.ipv4.conf.all.rp_filter = 0"
-    - "net.ipv4.conf.default.rp_filter = 0"
-
-
-- name: Apply Sysctl Parameters
-  command: sysctl --system
-
-
-- name: Install WSGI Python Module
-  become_user: root
-  shell: |
-    dnf install -y mod_wsgi
-    dnf install -y openvswitch3.4
-  ignore_errors: true
-  args:
-    executable: /bin/bash
-  when: ansible_os_family != 'RedHat' or ansible_os_family != 'CentOS' or ansible_os_family != 'Rocky'
-
-
-- name: Enable Open Vswitch
-  shell: |
-    sudo systemctl start ovs-vswitchd
-    sudo systemctl start ovsdb-server
-  ignore_errors: true
-  args:
-    executable: /bin/bash
-  when: ansible_os_family != 'RedHat' or ansible_os_family != 'CentOS' or ansible_os_family != 'Rocky'
-  # sudo systemctl enable openvswitch
-  # sudo systemctl start openvswitch
-
-
 - name: Check if the Devstack Config Already Exists
   stat: path=/opt/stack/devstack/local.conf
-  register: devstack_conf_exists
-- debug: msg={{ devstack_conf_exists }}
+  register: check_devstack_dir
+- debug: msg={{ check_devstack_dir }}
+  when: print_debug == true
 
 
-- name: Copy Local.conf
+- name: Copy Local.conf for Compute Node
   become_user: stack
   template:
     src: "{{ item }}.j2"
@@ -59,18 +15,18 @@
   register: copy_local_conf
   ignore_errors: true
   with_items:
-    - "local.conf"
-  when: devstack_conf_exists.stat.exists != True and ansible_os_family != 'RedHat' or ansible_os_family != 'CentOS' or ansible_os_family != 'Rocky'
+    - "compute-local-ubt.conf"
+  when: check_devstack_dir.stat.exists != True
 - debug: msg={{ copy_local_conf }}
-  when: print_debug == true and devstack_conf_exists.stat.exists != True and ansible_os_family != 'RedHat' or ansible_os_family != 'CentOS' or ansible_os_family != 'Rocky'
+  when: print_debug == true and check_devstack_dir.stat.exists != True
 
 
-#- name: Install Devstack
-#  become_user: stack
-#  shell: |
-#   ./stack.sh
-#  ignore_errors: true
-#  args:
-#    chdir: /opt/stack/devstack
-#    executable: /bin/bash
+- name: Install Devstack Compute Nodes
+  become_user: stack
+  shell: |
+   ./stack.sh
+  ignore_errors: true
+  args:
+    chdir: /opt/stack/devstack
+    executable: /bin/bash
 

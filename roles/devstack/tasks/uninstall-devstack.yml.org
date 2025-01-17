@@ -1,0 +1,117 @@
+---
+- name: Uninstall Devstack
+  become_user: stack
+  shell: |
+    ./unstack.sh
+  ignore_errors: true
+  args:
+    chdir: /opt/stack/devstack
+    executable: /bin/bash
+
+
+- name: Clean Devstack
+  become_user: stack
+  shell: |
+    ./clean.sh
+  ignore_errors: true
+  args:
+    chdir: /opt/stack/devstack
+    executable: /bin/bash
+
+
+- name: Copy Uninstall RDO Script
+  become_user: root
+  template:
+    src: "{{ item }}.j2"
+    dest: "/root/{{ item }}"
+    mode: 0755
+  register: copy_uninstall_el9s_script
+  ignore_errors: true
+  with_items:
+    - "remove-el9s-pkgs.sh"
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
+- debug: msg={{ copy_uninstall_el9s_script }}
+  ignore_errors: true
+  when: print_debug == true and ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
+
+
+#- name: Remove EL9s RDO Packages Remained
+#  shell: |
+#    ./remove-el9s-pkgs.sh
+#  ignore_errors: true
+#  args:
+#    chdir: /root/
+#    executable: /bin/bash
+#  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
+
+
+- name: Enable SELinux Policy
+  import_tasks: enable-selinux.yml
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Rocky"
+
+
+- name: Disable Legacy Network
+  import_tasks: disable-legacy-network.yml
+
+
+- name: Uninstall Uncleaned Packages by Devstack
+  package:
+    name: "{{ item }}"
+    state: absent
+  ignore_errors: true
+  with_items:
+    - "httpd"
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
+#    - "openvswitch3.4"
+
+
+- name: Flush IPtables
+  become_user: root
+  shell: |
+    iptables -F
+    /sbin/iptables-save > /etc/sysconfig/iptables
+    cat /etc/sysconfig/iptables
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
+
+
+- name: Start Firewalld
+  service: name=firewalld state=started enabled=no
+  ignore_errors: true
+
+
+- name: Kill Processes Hold On User Directory
+  shell: |
+    nohup pkill -U stack
+    sleep 3
+  register: kill_user_processes
+  ignore_errors: true
+  until: kill_user_processes is succeeded
+  retries: 10
+  # nohup fuser -k /opt/stack
+
+
+- name: Remove Stack User
+  user:
+    name: stack
+    shell: /bin/bash
+    home: /opt/stack
+    state: absent
+    remove: true
+    # group: stack
+
+
+- name: Reboot Required
+  shell: ( /bin/sleep 5; /sbin/shutdown -r now "Ansible updates triggered" ) &
+  ignore_errors: true
+  register: reboot_required
+  async: 120
+  poll: 0
+  notify:
+    - Waiting for Server to Come Back After Reboot
+
+
+- meta: flush_handlers
+

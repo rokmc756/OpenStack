@@ -1,0 +1,15 @@
+TYPE=Ethernet
+BOOTPROTO=none
+IPADDR=192.168.2.18{{ inventory_hostname[-1:] }}
+PREFIX=24
+GATEWAY=192.168.2.1
+DNS1=8.8.8.8
+DNS2=168.126.63.1
+DNS3=192.168.0.90
+DNS4=192.168.0.100
+DEFROUTE=yes
+NAME="{{ netdev2 }}"
+DEVICE={{ netdev2 }}
+ONBOOT=yes
+MTU=9000
+

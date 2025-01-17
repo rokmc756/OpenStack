@@ -1,7 +1,7 @@
 [[local|localrc]]
-HOST_IP={{ hostvars[inventory_hostname][_netdev]['ipv4']['address'] }}
+HOST_IP={{ hostvars[inventory_hostname][_netdev0]['ipv4']['address'] }}
 FIXED_RANGE=10.4.128.0/20
-FLOATING_RANGE={{ hostvars[inventory_hostname][_netdev]['ipv4']['network'] }}/24
+FLOATING_RANGE={{ hostvars[inventory_hostname][_netdev2]['ipv4']['network'] }}/24
 # FLOATING_RANGE=192.168.1.128/25
 LOGFILE=/opt/stack/logs/stack.sh.log
 ADMIN_PASSWORD=changeme

@@ -8,10 +8,8 @@
   register: configure_netplan_scripts
   with_items:
     - "01-netcfg.yaml"
-  when: ansible_os_family == 'Ubuntu' or ansible_os_family == 'Debian'
+  notify:
+    - Disable NetworkManager
 - debug: msg={{ configure_netplan_scripts }}
-  when: print_debug == true and ( ansible_os_family == 'Ubuntu' or ansible_os_family == 'Debian' )
+  when: print_debug == true
 
-
-- name: Disable NetworkManager
-  service: name=NetworkManager enabled=no

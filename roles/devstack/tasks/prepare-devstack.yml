@@ -25,19 +25,13 @@
   service: name=firewalld state=stopped enabled=no
 
 
-#  Upgrade packages to latest version
-#- name: Update All Packages
-#  package: name=* state=latest update_cache=yes
-#  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS' or ansible_os_family == 'Rocky'
-
-
 - name: Enable Legacy Network
   import_tasks: enable-legacy-network.yml
 
 
 #  No need due to RDO requires SELinux Permissive
 #- name: Disable SELinux Policy
-#  import_tasks: disable-selinux.yml
+#  import_tasks: security/disable-selinux.yml
 
 
 - name: Add Stack User
@@ -63,40 +57,6 @@
   ignore_errors: true
   args:
     executable: /bin/bash
-
-
-- name: Check if the Devstack Source Code is Already Downloaded
-  stat: path=/opt/stack/devstack
-  register: devstack_dir_existed
-- debug: msg={{ devstack_dir_existed }}
-
-
-# --single-branch --branch release-{{ devstack.major_version }}.{{ devstack.minor_version }}
-- name: Clone Devstack Source Code
-  become_user: stack
-  shell: |
-    git -C "/opt/stack" clone https://git.openstack.org/openstack-dev/devstack
-  register: git_clone_devstack
-  ignore_errors: true
-  when: devstack_dir_existed.stat.exists != True
-- debug: msg={{ git_clone_devstack }}
-  when: print_debug == true and devstack_dir_existed.stat.exists != True
-
-
-#- name: Checkout the specific version
-#  become_user: stack
-#  shell: |
-#    git checkout stable/2024.2
-#  register: checkout_version
-#  args:
-#    chdir: /opt/stack/devstack
-#- debug: msg={{ checkout_version }}
-#  when: print_debug == true
-
-
-# git checkout stable/xena
-# git clone https://opendev.org/openstack/neutron.git
-# git checkout zed-eom
 
 
 - name: Reboot Required

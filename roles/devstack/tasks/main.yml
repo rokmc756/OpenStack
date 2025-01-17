@@ -6,30 +6,41 @@
 
 - name: Set Facts for Package Name and List and Network Range
   import_tasks: set-devstack-facts.yml
-  tags: prepare, install, uninstall
-  when: inventory_hostname in groups['all']
+  tags: prepare, install, uninstall, create, delete, deploy, destroy, config, deconfig, setup
 
 
 - name: Prepare Devstack Environment
   import_tasks: prepare-devstack.yml
-  tags: prepare
-  when: inventory_hostname in groups['all']
+  tags: prepare, install
+  when: ( env is defined and env == true ) or ( devstack_all is defined and devstack_all == true )
 
 
-- name: Install Devstack
-  import_tasks: install-devstack.yml
-  tags: install
-  when: inventory_hostname in groups['all']
+- name: Get Devstack Git Sources
+  import_tasks: get-devstack-git-sources.yml
+  tags: setup, prepare, config, install
+  when: ( source is defined and source == true ) or ( devstack_all is defined and devstack_all == true )
+
+
+- name: Install Devstack Controller
+  import_tasks: install-controller.yml
+  tags: install, deploy
+  when: (( controller is defined and controller == true ) or ( devstack_all is defined and devstack_all == true )) and inventory_hostname in groups['controller']
+
+
+- name: Install Devstack Compute
+  import_tasks: install-compute.yml
+  tags: install, deploy
+  when: (( compute is defined and compute == true ) or ( devstack_all is defined and devstack_all == true )) and inventory_hostname in groups['compute']
+
+
+#- name: Install Devstack
+#  import_tasks: install-devstack.yml
+#  tags: install, deploy
+#  when: ( osp is defined and osp == true ) or ( devstack_all is defined and devstack_all == true )
 
 
 - name: Uninstall Devstack
   import_tasks: uninstall-devstack.yml
-  tags: uninstall
-  when: uninstall_compute is defined and uninstall_compute == true and inventory_hostname in groups['compute']
-
-
-- name: Uninstall Devstack
-  import_tasks: uninstall-devstack.yml
-  tags: uninstall
-  when: uninstall_controller is defined and uninstall_controller == true and inventory_hostname in groups['controller']
+  tags: uninstall, destroy
+  when: (( osp is defined and osp == true ) or ( devstack_all is defined and devstack_all == true ))
 

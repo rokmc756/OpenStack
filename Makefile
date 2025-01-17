@@ -14,6 +14,7 @@ KVM_ROLE_CONFIG="control-vms-kvm.yml"
 KVM_HOST_CONFIG="ansible-hosts-fedora"
 VMWARE_HOST_CONFIG="ansible-hosts-vmware"
 
+
 BOOT_CMD=${KVM_BOOT_CMD}
 SHUTDOWN_CMD=${KVM_SHUTDOWN_CMD}
 ROLE_CONFIG=${KVM_ROLE_CONFIG}
@@ -50,3 +51,4 @@ shutdown:
 
 # Need to check what it should be needed
 .PHONY:	all init install update ssh common clean no_targets__ role-update
+

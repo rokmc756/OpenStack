@@ -2,20 +2,28 @@
 - name: Get Network Interface name From Prefix of IP Addresses Provided for All Nodes
   set_fact:
     netdev0: "{{ ansible_interfaces | map('regex_replace', '^', 'ansible_') | map('extract', vars) | selectattr('ipv4', 'defined') | selectattr('ipv4.address', 'match', rdo.net.ipaddr0 ) | map(attribute='device') | first }}"
-    netdev1: "{{ ansible_interfaces | map('regex_replace', '^', 'ansible_') | map('extract', vars) | selectattr('ipv4', 'defined') | selectattr('ipv4.address', 'match', rdo.net.ipaddr1 ) | map(attribute='device') | first }}"
-    # netdev2: "{{ ansible_interfaces | map('regex_replace', '^', 'ansible_') | map('extract', vars) | selectattr('ipv4', 'defined') | selectattr('ipv4.address', 'match', rdo.net.ipaddr2 ) | map(attribute='device') | first }}"
+    netdev2: "{{ ansible_interfaces | map('regex_replace', '^', 'ansible_') | map('extract', vars) | selectattr('ipv4', 'defined') | selectattr('ipv4.address', 'match', rdo.net.ipaddr2 ) | map(attribute='device') | first }}"
 
 
 - name: Get IP Address from Provided Network Device Name
   set_fact:
     ipaddr0: "{{ hostvars[inventory_hostname]['ansible_'~netdev0].ipv4.address }}"
-    ipaddr1: "{{ hostvars[inventory_hostname]['ansible_'~netdev1].ipv4.address }}"
-    # ipaddr2: "{{ hostvars[inventory_hostname]['ansible_'~netdev2].ipv4.address }}"
+    ipaddr2: "{{ hostvars[inventory_hostname]['ansible_'~netdev2].ipv4.address }}"
+
+
+- name: Set Default Network Device and Address
+  set_fact:
+    _netdev: "{{ 'ansible_'~ netdev2 }}"
+    _netdev0: "{{ 'ansible_'~ netdev0 }}"
+    _netdev2: "{{ 'ansible_'~ netdev2 }}"
+    _ipaddr: "{{ ipaddr2 }}"
+    _ipaddr0: "{{ ipaddr0 }}"
+    _ipaddr2: "{{ ipaddr2 }}"
 
 
 #- name: Define IP Address Group seperated by Comma for Control Node
 #  set_fact:
-#    control_ipaddrs: "{{ groups['control'] | map('extract', hostvars, ['ansible_'~ netdev1, 'ipv4', 'address']) | join(',') }}"
+#    control_ipaddrs: "{{ groups['control'] | map('extract', hostvars, [ _netdev, 'ipv4', 'address']) | join(',') }}"
 #  delegate_to: "{{ item }}"
 #  delegate_facts: True
 #  with_items: "{{ groups['all'] }}"
@@ -24,7 +32,7 @@
 #
 #- name: Define IP Address Group seperated by Comma for Compute Node
 #  set_fact:
-#    compute_ipaddrs: "{{ groups['compute'] | map('extract', hostvars, ['ansible_'~ netdev1, 'ipv4', 'address']) | join(',') }}"
+#    compute_ipaddrs: "{{ groups['compute'] | map('extract', hostvars, [ _netdev, 'ipv4', 'address']) | join(',') }}"
 #  delegate_to: "{{ item }}"
 #  delegate_facts: True
 #  with_items: "{{ groups['all'] }}"
@@ -33,22 +41,16 @@
 #
 #- name: Define IP Address Group seperated by Comma for Network Node
 #  set_fact:
-#    network_ipaddrs: "{{ groups['control'] | map('extract', hostvars, ['ansible_'~ netdev1, 'ipv4', 'address']) | join(',') }}"
+#    network_ipaddrs: "{{ groups['control'] | map('extract', hostvars, [ _netdev, 'ipv4', 'address']) | join(',') }}"
 #  delegate_to: "{{ item }}"
 #  delegate_facts: True
 #  with_items: "{{ groups['all'] }}"
 #  # when: inventory_hostname in groups['network']
 
 
-- name: Set Default Network Device and Address
-  set_fact:
-    _netdev: "{{ 'ansible_'~ netdev1 }}"
-    _ipaddr: "{{ ipaddr1 }}"
-
-
 - name: Define IP Address Group seperated by Comma for Control Node
   set_fact:
-    controller_ipaddrs: "{{ groups['controller'] | map('extract', hostvars, ['ansible_'~ netdev1, 'ipv4', 'address']) | join(',') }}"
+    controller_ipaddrs: "{{ groups['controller'] | map('extract', hostvars, [ _netdev, 'ipv4', 'address']) | join(',') }}"
   delegate_to: "{{ item }}"
   delegate_facts: True
   with_items: "{{ groups['all'] }}"
@@ -57,10 +59,10 @@
 
 #- name: Set Default Network Device and Address
 #  set_fact:
-#    control_node_ipaddr: "{{ hostvars[groups['control'][0]]['ansible_'~ netdev1]['ipv4']['address'] }}"
-#    compute_node_ipaddr: "{{ hostvars[groups['compute'][0]]['ansible_'~ netdev1]['ipv4']['address'] }}"
-#    network_node_ipaddr: "{{ hostvars[groups['network'][0]]['ansible_'~ netdev1]['ipv4']['address'] }}"
-#    storage_node_ipaddr: "{{ hostvars[groups['storage'][0]]['ansible_'~ netdev1]['ipv4']['address'] }}"
+#    control_node_ipaddr: "{{ hostvars[groups['control'][0]][_netdev]['ipv4']['address'] }}"
+#    compute_node_ipaddr: "{{ hostvars[groups['compute'][0]][_netdev]['ipv4']['address'] }}"
+#    network_node_ipaddr: "{{ hostvars[groups['network'][0]][_netdev]['ipv4']['address'] }}"
+#    storage_node_ipaddr: "{{ hostvars[groups['storage'][0]][_netdev]['ipv4']['address'] }}"
 
 
 - name: Define Fact of Network Address

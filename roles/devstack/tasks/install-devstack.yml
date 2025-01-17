@@ -1,36 +1,4 @@
 ---
-- name: Create an Empty File for Devstack Sysctl Parameters
-  copy:
-    content: ""
-    dest: /etc/sysctl.d/99-sysctl-devstack.conf
-    force: no
-
-
-- name: Configure Sysctl Parameters for Devstack
-  lineinfile:
-    path: /etc/sysctl.d/99-sysctl-devstack.conf
-    line: "{{ item }}"
-  with_items:
-    - "vm.overcommit_memory = 1"
-    - "net.ipv4.ip_forward = 1"
-    - "net.ipv4.conf.all.rp_filter = 0"
-    - "net.ipv4.conf.default.rp_filter = 0"
-
-
-- name: Apply Sysctl Parameters
-  command: sysctl --system
-
-
-- name: Configure Controller Node
-  import_tasks: config-controller.yml
-  when: install_controller is defined and install_controller == true and inventory_hostname in groups['controller']
-
-
-- name: Configure Compute Node
-  import_tasks: config-compute.yml
-  when: install_compute is defined and install_compute == true and inventory_hostname in groups['compute']
-
-
 - name: Install Devstack Controller Node
   become_user: stack
   shell: |
@@ -39,7 +7,7 @@
   args:
     chdir: /opt/stack/devstack
     executable: /bin/bash
-  when: install_controller is defined and install_controller == true and inventory_hostname in groups['controller']
+  when: inventory_hostname in groups['controller']
 
 
 - name: Install Devstack Compute Nodes
@@ -50,5 +18,5 @@
   args:
     chdir: /opt/stack/devstack
     executable: /bin/bash
-  when: install_compute is defined and install_compute == true and inventory_hostname in groups['compute']
+  when: inventory_hostname in groups['compute']
 

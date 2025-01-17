@@ -1,0 +1,34 @@
+---
+- name: Check if the Devstack Git Directory Already Exists
+  stat: path=/opt/stack/devstack
+  register: check_git_dir
+- debug: msg={{ check_git_dir }}
+
+
+# --single-branch --branch release-{{ devstack.major_version }}.{{ devstack.minor_version }}
+- name: Clone Devstack Source Code
+  become_user: stack
+  shell: |
+    git -C "/opt/stack" clone https://git.openstack.org/openstack-dev/devstack
+  register: git_clone_devstack
+  ignore_errors: true
+  when: check_git_dir.stat.exists != True
+- debug: msg={{ git_clone_devstack }}
+  when: print_debug == true and check_git_dir.stat.exists != True
+
+
+# git clone https://git.openstack.org/openstack/devstack -b stable/victoria
+# git checkout stable/victoria
+# git checkout stable/2024.2
+
+
+- name: Checkout the specific version
+  become_user: stack
+  shell: |
+    git checkout stable/2024.2
+  register: checkout_version
+  args:
+    chdir: /opt/stack/devstack
+- debug: msg={{ checkout_version }}
+  when: print_debug == true
+
