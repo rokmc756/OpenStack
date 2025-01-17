@@ -17,22 +17,22 @@ Supported OS for ansible target host should be prepared with package repository 
 
 ## Prepare Ansible Host to run this Ansible Playbook
 * MacOS
-```!yaml
+```yaml
 $ xcode-select --install
 $ brew install ansible
 $ brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
-```!yaml
+```yaml
 
 * Fedora/CentOS/RHEL, Ubuntu, OpenSUSE
-```!yaml
+```yaml
 $ yum install ansible
 $ apt install ansible
-```!yaml
+```yaml
 
 ## How to Deploy and Destroy OpenStack by Packstack or DevStack
 #### 1) Configure Variables and Inventory with Hostnames, IP Addresses, sudo Username and Password
 ##### Configure Inventory for Devstack
-```!yaml
+```yaml
 $ vi ansible-hosts-devstack
 [all:vars]
 ssh_key_filename="id_rsa"
@@ -46,19 +46,19 @@ ubt22-rdo01 ansible_ssh_host=192.168.1.171
 [compute]
 ubt22-rdo02 ansible_ssh_host=192.168.1.172
 ubt22-rdo03 ansible_ssh_host=192.168.1.173
-```!yaml
+```yaml
 
 ##### Configure Variables for Devstack
-```!yaml
+```yaml
 ```!yaml
 
 ##### Configure Global Variables
-```!yaml
-```!yaml
+```yaml
+```yaml
 
 
 #### 1) Deploy OpenStack by Devstack
-```!yaml
+```yaml
 $ vi setup-devstack.yml
 ---
 - hosts: all
@@ -74,11 +74,11 @@ $ make devstack r=install s=compute
 
 $ make devstack r=uninstall s=compute
 $ make devstack r=uninstall s=controller
-```!yaml
+```yaml
 
 
 #### 2) Deploy OpenStack with Packstack by This Ansible Playbook
-```!yaml
+```yaml
 [all:vars]
 ssh_key_filename="id_rsa"
 remote_machine_username="jomoon"
@@ -114,11 +114,11 @@ rk9-node05 ansible_ssh_host=192.168.2.195
 
 [redis]
 rk9-node05 ansible_ssh_host=192.168.2.195
-```!yaml
+```yaml
 
 
 #### 2) Deploy OpenStack with Packstack by This Ansible Playbook
-```!yaml
+```yaml
 $ make packstack r=prepare s=env
 $ make packstack r=create s=swiftblc
 $ make packstack r=create s=answer
@@ -126,17 +126,17 @@ $ make packstack r=install s=osp
 
 or
 $ make packstack r=install s=all
-```!yaml
+```yaml
 
 
 #### 2) Destroy OpenStack with Packstack by This Ansible Playbook
-```!yaml
+```yaml
 $ make packstack r=uninstall s=osp
 $ make packstack r=delete s=swiftblc
 
 or
 $ make packstack r=uninstall s=all
-```!yaml
+```yaml
 
 
 ## Similar Playbook
