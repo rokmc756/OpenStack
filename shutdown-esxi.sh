@@ -1,19 +1,18 @@
-#!/bin/bash
-#
+GW_HOST="192.168.0.101"
+ESXi_IPs="192.168.0.231 192.168.0.101"
 
-esxi_host="192.168.0.231"
-esxi_ips="192.168.0.231 192.168.0.101"
-esxi_passwd="Changeme34#$"
-
-for ip in `echo $esxi_ips`
+for i in `echo $ESXi_IPs`
 do
+    # echo $i
 
-    for ln in `cat /home/jomoon/.ssh/known_hosts | grep -n $ip | cut -d : -f 1`
+    for ln in `cat /home/jomoon/.ssh/known_hosts | grep -n $i | cut -d : -f 1`
     do
+        echo $ln
         sed -ie "$ln"d /home/jomoon/.ssh/known_hosts
     done
 
-    sshpass -p "$esxi_passwd" ssh -o StrictHostKeyChecking=no root@$esxi_host "poweroff; halt"
+    sshpass -p "Changeme34#$" ssh -o StrictHostKeyChecking=no root@192.168.0.231 "poweroff; halt"
+    # sshpass -p "Changeme12!@" ssh -o StrictHostKeyChecking=no root@192.168.0.101 "poweroff; halt"
 
 done
 

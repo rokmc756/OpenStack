@@ -1,4 +1,12 @@
 ---
+- name: Create RDO Answer Directory
+  file:
+    path: "{{ rdo.base_path }}/rdo-scripts"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
 - name: Install Language Pack
   package: name={{item}} state=present
   with_items:
@@ -103,10 +111,10 @@
     mode: 0644
   register: configure_sysinit_network_scripts
   with_items:
-    - "ifcfg-ens192"
-    - "ifcfg-ens224"
-    - "ifcfg-ens256"
+    - "ifcfg-{{ netdev0 }}"
+    - "ifcfg-{{ netdev2 }}"
 - debug: msg={{ configure_sysinit_network_scripts }}
+#  - "ifcfg-ens224"
 
 
 - name: Enable Sysinit Network

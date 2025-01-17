@@ -1,0 +1,14 @@
+TYPE=Ethernet
+BOOTPROTO=none
+IPADDR={{ hostvars[inventory_hostname]['ansible_'~ netdev0]['ipv4']['address'] }}
+PREFIX=24
+# GATEWAY=192.168.0.1
+DNS1=8.8.8.8
+DNS2=168.126.63.1
+DNS3=192.168.0.90
+DNS4=192.168.0.100
+DEFROUTE=no
+NAME="{{ netdev0 }}"
+DEVICE={{ netdev0 }}
+ONBOOT=yes
+

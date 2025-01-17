@@ -1,0 +1,123 @@
+---
+- name: Create an Empty File for RDO Sysctl Parameters
+  copy:
+    content: ""
+    dest: /etc/sysctl.d/99-sysctl-rdo.conf
+    force: no
+
+
+- name: Configure Sysctl Parameters for Cindor or Celomiter?
+  lineinfile:
+    path: /etc/sysctl.d/99-sysctl-rdo.conf
+    line: "{{ item }}"
+  with_items:
+    - "vm.overcommit_memory = 1"
+
+
+- name: Apply sysctl parameters
+  command: sysctl --system
+
+
+- name: Create RDO Answer Directory
+  file:
+    path: "{{ rdo.base_path }}/rdo-scripts"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: inventory_hostname in groups['control']
+
+
+- name: Generate RDO the answer file
+  shell: packstack --gen-answer-file={{ rdo.base_path }}/rdo-scripts/rdo-answer.txt
+  ignore_errors: yes
+  when: inventory_hostname in groups['control']
+
+
+- name: Replace all IPs with the IP available for access to the dashboard
+  lineinfile:
+    dest: "{{ rdo.base_path }}/rdo-scripts/rdo-answer.txt"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: "{{ item.state }}"
+  with_items:
+    - { regexp: "^CONFIG_HORIZON_SSL=n",                             line: "CONFIG_HORIZON_SSL=y", state: present }
+    - { regexp: "^CONFIG_NTP_SERVERS=*",                             line: "CONFIG_NTP_SERVERS=kr.pool.ntp.org", state: present }
+    - { regexp: "^CONFIG_PROVISION_DEMO=y",                          line: "CONFIG_PROVISION_DEMO=n", state: present }
+    - { regexp: "^CONFIG_CONTROLLER_HOST=*",                         line: "CONFIG_CONTROLLER_HOST={{ control_ipaddrs }}",  state: present }
+    - { regexp: "^CONFIG_COMPUTE_HOSTS=*",                           line: "CONFIG_COMPUTE_HOSTS={{ compute_ipaddrs }}",     state: present }
+    - { regexp: "^CONFIG_NETWORK_HOSTS=*",                           line: "CONFIG_NETWORK_HOSTS={{ network_ipaddrs }}",     state: present }
+    - { regexp: "^CONFIG_STORAGE_HOST=*",                            line: "CONFIG_STORAGE_HOST={{ storage_ipaddrs }}",      state: present }
+    - { regexp: "^CONFIG_MARIADB_HOST=*" ,                           line: "CONFIG_MARIADB_HOST={{ mariadb_ipaddrs }}",      state: present }
+    - { regexp: "^CONFIG_LBAAS_INSTALL=*",                           line: "CONFIG_LBAAS_INSTALL=y", state: present }
+    - { regexp: "^CONFIG_HEAT_INSTALL=*",                            line: "CONFIG_HEAT_INSTALL=y", state: present }
+    - { regexp: "^CONFIG_KEYSTONE_ADMIN_PW=*",                       line: "CONFIG_KEYSTONE_ADMIN_PW=changeme", state: present }
+    - { regexp: "^CONFIG_KEYSTONE_ADMIN_USERNAME=*",                 line: "CONFIG_KEYSTONE_ADMIN_USERNAME=admin", state: present }
+    - { regexp: "^CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=*",             line: "CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=extnet:br-ex", state: present }
+    - { regexp: "^CONFIG_NEUTRON_OVS_BRIDGE_IFACES=*",               line: "CONFIG_CONFIG_NEUTRON_OVS_BRIDGE_IFACES=br-ex:{{ netdev0 }}", state: present }  # External
+    - { regexp: "^CONFIG_NEUTRON_OVS_TUNNEL_IF=*",                   line: "CONFIG_CONFIG_NEUTRON_OVS_TUNNEL_IF={{ netdev2 }}", state: present }            # Internal
+    - { regexp: "^CONFIG_SWIFT_KS_PW=*",                             line: "CONFIG_SWIFT_KS_PW=changeme", state: present }
+    - { regexp: "^CONFIG_SWIFT_STORAGES=*",                          line: "CONFIG_SWIFT_STORAGES={{ rdo.swift.devices|map('regex_replace', '$', '1')|join(',') }}", state: present }
+    - { regexp: "^CONFIG_SWIFT_STORAGE_ZONES=*",                     line: "CONFIG_SWIFT_STORAGE_ZONES=1", state: present }
+    - { regexp: "^CONFIG_SWIFT_STORAGE_REPLICAS=*",                  line: "CONFIG_SWIFT_STORAGE_REPLICAS=1", state: present }
+    - { regexp: "^CONFIG_SWIFT_STORAGE_FSTYPE=*",                    line: "CONFIG_SWIFT_STORAGE_FSTYPE=xfs", state: present }
+    - { regexp: "^CONFIG_SWIFT_HASH=*",                              line: "CONFIG_SWIFT_HASH=changeme", state: present }
+    - { regexp: "^CONFIG_SWIFT_STORAGE_SIZE=*",                      line: "CONFIG_SWIFT_STORAGE_SIZE=2G", state: present }
+    - { regexp: "^CONFIG_CEILOMETER_INSTALL=y",                      line: "CONFIG_CEILOMETER_INSTALL=n",  state: present }
+  when: inventory_hostname in groups['control']
+
+
+# - { regexp: "^CONFIG_AMQP_HOST=*",                               line: "CONFIG_AMQP_HOST={{ amqp_ipaddrs }}",         state: present }
+# - { regexp: "^CONFIG_REDIS_HOST=*",                              line: "CONFIG_REDIS_HOST={{ redis_ipaddrs }}",        state: present }
+
+# - { regexp: "^CONFIG_SSH_KEY=*",           line: "CONFIG_SSH_KEY=/{{ rdo.base_path }}/.ssh/id_rsa.pub",               state: present }
+# https://hyungyoul.tistory.com/10
+
+# - { regexp: "^CONFIG_CINDER_INSTALL=y",                          line: "CONFIG_CINDER_INSTALL=n",  state: present }
+# - { regexp: "^CONFIG_AODH_INSTALL=*",                            line: "CONFIG_AODH_INSTALL=n",  state: present }
+
+# - { regexp: "^CONFIG_DEFAULT_PASSWORD=*",                        line: "CONFIG_DEFAULT_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_AMQP_AUTH_PASSWORD=*",                      line: "CONFIG_AMQP_AUTH_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_KEYSTONE_LDAP_USER_PASSWORD=*",             line: "CONFIG_KEYSTONE_LDAP_USER_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_CINDER_SOLIDFIRE_PASSWORD=*",               line: "CONFIG_CINDER_SOLIDFIRE_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_MANILA_NETAPP_PASSWORD=*",                  line: "CONFIG_MANILA_NETAPP_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=*",        line: "CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_HEAT_DOMAIN_PASSWORD=*",                    line: "CONFIG_HEAT_DOMAIN_PASSWORD=changeme",    state: present }
+# - { regexp: "^CONFIG_CINDER_VOLUMES_SIZE=*",                     line: "CONFIG_CINDER_VOLUMES_SIZE=10G",     state: present }
+
+# - { regexp: "^CONFIG_CINDER_NETAPP_PASSWORD=*",                line: "CONFIG_CINDER_NETAPP_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_CINDER_NETAPP_SA_PASSWORD=*",             line: "CONFIG_CINDER_NETAPP_SA_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_VCENTER_PASSWORD=*",                      line: "CONFIG_VCENTER_PASSWORD=changeme", state: present }
+
+# - { regexp: "^CONFIG_SWIFT_INSTALL=y",                           line: "CONFIG_SWIFT_INSTALL=n",  state: present }
+# - { regexp: "^CONFIG_CEILOMETER_INSTALL=y",                      line: "CONFIG_CEILOMETER_INSTALL=n",  state: present }
+# - { regexp: "^CONFIG_CINDER_INSTALL=y",                          line: "CONFIG_CINDER_INSTALL=n",  state: present }
+# - { regexp: "^CONFIG_AODH_INSTALL=*",                            line: "CONFIG_AODH_INSTALL=n",  state: present }
+
+# Not OK
+#- { regexp: "^CONFIG_NEUTRON_FWAAS=*",                           line: "CONFIG_NEUTRON_FWAAS=y", state: present }
+#- { regexp: "^CONFIG_NEUTRON_VPNAAS=*",                          line: "CONFIG_NEUTRON_VPNAAS=y", state: present }
+#- { regexp: "^CONFIG_PROVISION_OVS_BRIDGE=*",                    line: "CONFIG_PROVISION_OVS_BRIDGE=y", state: present }
+#- { regexp: "^CONFIG_NEUTRON_ML2_TYPE_DRIVERS=*",                line: "CONFIG_NEUTRON_ML2_TYPE_DRIVERS=vxlan", state: present }
+#- { regexp: "^CONFIG_NEUTRON_ML2_TENANT_NETWORK_TYPES=*",        line: "CONFIG_NEUTRON_ML2_TENANT_NETWORK_TYPES=vxlan", state: present }
+#- { regexp: "^CONFIG_NEUTRON_ML2_MECHANISM_DRIVERS=*",           line: "CONFIG_NEUTRON_ML2_MECHANISM_DRIVERS=openvswitch", state: present }
+#- { regexp: "^CONFIG_NEUTRON_L2_AGENT=*",                        line: "CONFIG_NEUTRON_L2_AGENT=openvswitch", state: present }
+
+
+# - { regexp: "^CONFIG_SSH_KEY=*$",                                line: "CONFIG_SSH_KEY={{ rdo.base_path }}/.ssh/id_rsa.pub",               state: present }
+#
+# - { regexp: "^CONFIG_NEUTRON_OVN_TUNNEL_IF=",               line: "CONFIG_NEUTRON_OVN_TUNNEL_IF={{ netdev0 }}", state: present }
+# - { regexp: "^CONFIG_NEUTRON_ML2_TYPE_DRIVERS=*",           line: "CONFIG_NEUTRON_ML2_TYPE_DRIVERS=gre", state: present }
+# - { regexp: "^CONFIG_NEUTRON_OVS_TUNNEL_IF=",               line: "CONFIG_NEUTRON_OVS_TUNNEL_IF={{ netdev2 }}", state: present }
+
+# - { regexp: "^CONFIG_VCENTER_PASSWORD=*",                   line: "CONFIG_VCENTER_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_AMQP_AUTH_PASSWORD=*",                 line: "CONFIG_AMQP_AUTH_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_KEYSTONE_LDAP_USER_PASSWORD=*",        line: "CONFIG_KEYSTONE_LDAP_USER_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_CINDER_NETAPP_PASSWORD=*",             line: "CONFIG_CINDER_NETAPP_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_CINDER_NETAPP_SA_PASSWORD=*",          line: "CONFIG_CINDER_NETAPP_SA_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_CINDER_SOLIDFIRE_PASSWORD=*",          line: "CONFIG_CINDER_SOLIDFIRE_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_MANILA_NETAPP_PASSWORD=*",             line: "CONFIG_MANILA_NETAPP_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=*",   line: "CONFIG_MANILA_SERVICE_INSTANCE_PASSWORD=changeme", state: present }
+# - { regexp: "^CONFIG_HEAT_DOMAIN_PASSWORD=*",               line: "CONFIG_HEAT_DOMAIN_PASSWORD=changeme",    state: present }
+# - { regexp: "^CONFIG_CINDER_VOLUMES_SIZE=*",                line: "CONFIG_CINDER_VOLUMES_SIZE=10G",     state: present }
+

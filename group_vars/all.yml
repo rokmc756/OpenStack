@@ -20,21 +20,20 @@ rdo:
   net:
     type: "virtual"                # Or Physical
     gateway: "192.168.0.1"
-    vipaddr: "192.168.1.79"
-    ipaddr0: "192.168.0.18"
-    ipaddr1: "192.168.1.18"
-    ipaddr2: "192.168.2.18"
+    vipaddr: "192.168.2.79"
+    ipaddr0: "192.168.0.19"
+    ipaddr2: "192.168.2.19"
   client:
     net:
       type: "virtual"              # Or Physical
-      ipaddr0: "192.168.0.18"
-      ipaddr1: "192.168.1.18"
-      ipaddr2: "192.168.2.18"
+      ipaddr0: "192.168.0.19"
+      ipaddr2: "192.168.2.19"
   ext_storage:
     net:
       ipaddr0: "192.168.0."
-      ipaddr1: "192.168.1."
       ipaddr2: "192.168.2."
+  swift:
+    devices: [ "/dev/vdd", "/dev/vde" ]
   cni:
     install: true
     change_mtu: true

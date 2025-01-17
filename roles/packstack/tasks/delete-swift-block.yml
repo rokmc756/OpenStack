@@ -1,0 +1,19 @@
+---
+- parted:
+    device: "{{ item }}"
+    number: "1"
+    state: absent
+  register: delete_partition
+  with_items: "{{ rdo.swift.devices }}"
+  ignore_errors: true
+- debug: msg={{ delete_partition }}
+
+
+- name: Uninstall Parted
+  package:
+    name: parted
+    state: absent
+  register: uninstall_parted
+  ignore_errors: true
+- debug: msg={{ uninstall_parted }}
+

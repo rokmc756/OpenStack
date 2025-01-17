@@ -2,7 +2,7 @@
   become_user: root
   template:
     src: "{{ item }}.j2"
-    dest: "/root/rdo-scripts/{{ item }}"
+    dest: "{{ rdo.base_path }}/rdo-scripts/{{ item }}"
     mode: 0755
   register: copy_uninstall_rdo_script
   ignore_errors: true
@@ -17,7 +17,7 @@
     ./uninstall-rdo.sh
   ignore_errors: true
   args:
-    chdir: /root/rdo-scripts
+    chdir: "{{ rdo.base_path }}/rdo-scripts"
     executable: /bin/bash
 
 
@@ -43,10 +43,10 @@
   register: delete_sysinit_network_scripts
   ignore_errors: true
   with_items:
-    - "ifcfg-ens192"
-    - "ifcfg-ens224"
-    - "ifcfg-ens256"
+    - "ifcfg-{{ netdev0 }}"
+    - "ifcfg-{{ netdev2 }}"
 - debug: msg={{ delete_sysinit_network_scripts }}
+  #  - "ifcfg-{{ netdev1 }}"
 
 
 
@@ -122,7 +122,7 @@
     ./remove-el9s-pkgs.sh
   ignore_errors: true
   args:
-    chdir: /root/rdo-scripts
+    chdir: "{{ rdo.base_path }}/rdo-scripts"
     executable: /bin/bash
 
 
@@ -147,7 +147,7 @@
     state: absent
   register: delete_swift_dir
   with_items:
-    - "/root/rdo-scripts/rdo-answer.txt"
+    - "{{ rdo.base_path }}/rdo-scripts/rdo-answer.txt"
     - "/opt/swift-dir"
 - debug: msg={{ delete_swift_dir }}
 

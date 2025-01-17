@@ -1,8 +1,5 @@
-# add the IP address, username and hostname of the target hosts here
-
 USERNAME=jomoon
 COMMON="yes"
-# ANSIBLE_HOST_PASS="Mc002661!@"
 ANSIBLE_HOST_PASS="changeme"
 ANSIBLE_TARGET_PASS="changeme"
 # include ./*.mk
@@ -48,6 +45,19 @@ init:	setup-host.yml update-host.yml
 		./init_host.sh "$${IP}" "${USERNAME}"; \
 	done
 	ansible-playbook -i ansible-hosts -u ${USERNAME} --ssh-common-args='-o UserKnownHostsFile=./known_hosts -o VerifyHostKeyDNS=true' install-ansible-prereqs.yml
+
+hosts:
+	ln -sf ansible-hosts-rdo-co7 ansible-hosts
+	make -f ./makefile_configs/Makefile.hosts r=${r} s=${s} c=${c} USERNAME=${USERNAME}
+
+packstack:
+	ln -sf ansible-hosts-rdo-co9 ansible-hosts
+	make -f ./makefile_configs/Makefile.packstack r=${r} s=${s} c=${c} USERNAME=${USERNAME}
+
+devstack:
+	ln -sf ansible-hosts-devstack ansible-hosts
+	make -f ./makefile_configs/Makefile.devstack r=${r} s=${s} c=${c} USERNAME=${USERNAME}
+
 
 # - https://ansible-tutorial.schoolofdevops.com/control_structures/
 install: role-update install.yml

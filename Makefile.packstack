@@ -1,0 +1,134 @@
+packstack:
+	@if [ "${r}" = "init" ] || [ "${r}" = "uninit" ] || [ "${r}" = "reinit" ] || [ "${r}" = "purge" ]; then\
+		if [ ! -z ${r} ] && [ "${s}" != "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{"${s}": True}' --tags='${r}';\
+			else\
+				echo "No actions to init/uninit/reinit packstack";\
+			fi\
+		elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{packstack_all: True}' --tags='${r}';\
+			else\
+				echo "No actions to init/uninit/reinit packstack";\
+			fi\
+		else\
+			echo "No actions to init/uninit/reinit packstack";\
+		fi;\
+	elif [ "${r}" = "prepare" ] || [ "${r}" = "clean" ]; then\
+		if [ ! -z ${r} ] && [ "${s}" != "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{"${s}": True}' --tags='${r}';\
+			else\
+				echo "No actions to prepare/clean packstack";\
+			fi\
+		elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{packstack_all: True}' --tags='${r}';\
+			else\
+				echo "No actions to prepare/clean packstack";\
+			fi\
+		else\
+			echo "No actions to prepare/clean packstack";\
+		fi;\
+	elif [ "${r}" = "enable" ] || [ "${r}" = "disable" ]; then\
+		if [ ! -z ${r} ] && [ "${s}" != "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{"${s}": True}' --tags='${r}';\
+			else\
+				echo "No actions to ennable/disable packstack";\
+			fi\
+		elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{packstack_all: True}' --tags='${r}';\
+			else\
+				echo "No actions to ennable/disable packstack";\
+			fi\
+		else\
+			echo "No actions to ennable/disable packstack";\
+		fi;\
+	elif [ "${r}" = "install" ] || [ "${r}" = "uninstall" ]; then\
+		if [ ! -z ${r} ] && [ "${s}" != "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{"${s}": True}' --tags='${r}';\
+			else\
+				echo "No actions to install/uninstall packstack";\
+			fi\
+		elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{packstack_all: True}' --tags='${r}';\
+			else\
+				echo "No actions to install/uninstall packstack";\
+			fi\
+		else\
+			echo "No actions to install/uninstall packstack";\
+		fi;\
+	elif [ "${r}" = "create" ] || [ "${r}" = "delete" ]; then\
+		if [ ! -z ${r} ] && [ "${s}" != "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{"${s}": True}' --tags='${r}';\
+			else\
+				echo "No actions to add/remove packstack";\
+			fi\
+		elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{packstack_all: True}' --tags='${r}';\
+			else\
+				echo "No actions to add/remove packstack";\
+			fi\
+		else\
+			echo "No actions to add/remove packstack";\
+		fi;\
+	elif [ "${r}" = "add" ] || [ "${r}" = "remove" ]; then\
+		if [ ! -z ${r} ] && [ "${s}" != "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{"${s}": True}' --tags='${r}';\
+			else\
+				echo "No actions to add/remove packstack";\
+			fi\
+		elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{packstack_all: True}' --tags='${r}';\
+			else\
+				echo "No actions to add/remove packstack";\
+			fi\
+		else\
+			echo "No actions to add/remove packstack";\
+		fi;\
+	elif [ "${r}" = "upgrade" ] || [ "${r}" = "downgrade" ]; then\
+		if [ ! -z ${r} ] && [ "${s}" != "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{"${s}": True}' --tags='${r}';\
+			else\
+				echo "No actions to upgrade/downgrade packstack";\
+			fi\
+		elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{packstack_all: True}' --tags='${r}';\
+			else\
+				echo "No actions to upgrade/downgrade packstack";\
+			fi\
+		else\
+			echo "No actions to upgrade/downgrade packstack";\
+		fi;\
+	elif [ "${r}" = "upload" ] || [ "${r}" = "download" ]; then\
+		if [ ! -z ${r} ] && [ "${s}" != "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{"${s}": True}' --tags='${r}';\
+			else\
+				echo "No actions to upload/download packstack";\
+			fi\
+		elif [ ! -z ${r} ] && [ "${s}" = "all" ]; then\
+			if [ -z ${c} ];  then\
+				ansible-playbook --ssh-common-args='-o UserKnownHostsFile=./known_hosts' -u ${USERNAME} setup-packstack.yml -e '{packstack_all: True}' --tags='${r}';\
+			else\
+				echo "No actions to upload/download packstack";\
+			fi\
+		else\
+			echo "No actions to upload/download packstack";\
+		fi;\
+	else\
+		echo "No actions to packstack role";\
+		exit;\
+	fi
+

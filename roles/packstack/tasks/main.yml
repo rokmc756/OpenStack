@@ -6,24 +6,46 @@
 
 - name: Set Facts for Package Name and List and Network Range
   import_tasks: set-packstack-facts.yml
-  tags:
-    - prepare
-    - install
-    - uninstall
+  tags: prepare, install, uninstall, deploy, destroy, create
 
 
-- name: Prepare Environment
-  import_tasks: prepare-environment.yml
-  tags: prepare
+- name: Prepare Packstack Environment
+  import_tasks: prepare-packstack.yml
+  tags: prepare, install
+  when: ( env is defined and env == true ) or ( packstack_all is defined and packstack_all == true )
 
 
-# https://computingforgeeks.com/install-and-configure-openstack-on-centos/
-- name: Run Packstack
+- name: Create Swift Block
+  import_tasks: create-swift-block.yml
+  tags: create, install
+  when: ( swiftblc is defined and swiftblc == true ) or ( packstack_all is defined and packstack_all == true )
+
+
+- name: Configure Packstack Answers
+  import_tasks: configure-packstack.yml
+  tags: create, install
+  when: ( answer is defined and answer == true ) or ( packstack_all is defined and packstack_all == true )
+
+
+- name: Run Packstack to Deploy Openstack
   import_tasks: install-packstack.yml
-  tags: install
+  tags: install, deploy
+  when: ( osp is defined and osp == true ) or ( packstack_all is defined and packstack_all == true )
 
 
 - name: Uninstall Packstack
   import_tasks: uninstall-packstack.yml
-  tags: uninstall
+  tags: uninstall, destroy
+  when: ( osp is defined and osp == true ) or ( packstack_all is defined and packstack_all == true )
+
+
+- name: Delete Swift Block
+  import_tasks: delete-swift-block.yml
+  tags: delete, uninstall
+  when: ( swiftblc is defined and swiftblc == true ) or ( packstack_all is defined and packstack_all == true )
+
+
+# FYI
+# https://computingforgeeks.com/install-and-configure-openstack-on-centos/
+
 
