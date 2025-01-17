@@ -78,7 +78,11 @@ $ make devstack r=uninstall s=all
 ```
 
 
-#### 2) Deploy OpenStack with Packstack by This Ansible Playbook
+## Packstack Architecture
+![alt text](https://github.com/rokmc756/openstack/blob/main/roles/packstack/files/packstack-architecture.webp)
+
+
+#### 1) Deploy OpenStack with Packstack by This Ansible Playbook
 ```yaml
 [all:vars]
 ssh_key_filename="id_rsa"
@@ -130,7 +134,7 @@ $ make packstack r=install s=all
 ```
 
 
-#### 2) Destroy OpenStack with Packstack by This Ansible Playbook
+#### 3) Destroy OpenStack with Packstack by This Ansible Playbook
 ```yaml
 $ make packstack r=uninstall s=osp
 $ make packstack r=delete s=swiftblc

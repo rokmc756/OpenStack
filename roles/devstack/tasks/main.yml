@@ -6,10 +6,7 @@
 
 - name: Set Facts for Package Name and List and Network Range
   import_tasks: set-devstack-facts.yml
-  tags:
-    - prepare
-    - install
-    - uninstall
+  tags: prepare, install, uninstall
   when: inventory_hostname in groups['all']
 
 
@@ -35,5 +32,4 @@
   import_tasks: uninstall-devstack.yml
   tags: uninstall
   when: uninstall_controller is defined and uninstall_controller == true and inventory_hostname in groups['controller']
-
 
