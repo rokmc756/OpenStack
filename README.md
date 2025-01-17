@@ -57,23 +57,24 @@ ubt22-rdo03 ansible_ssh_host=192.168.1.173
 ```
 
 
-#### 1) Deploy OpenStack by Devstack
+#### 1) Deploy OpenStack with Devstack by This Ansible Playbook
 ```yaml
-$ vi setup-devstack.yml
----
-- hosts: all
-  become: yes
-  vars:
-    print_debug: true
-  roles:
-
-
 $ make prepare
 $ make devstack r=install s=controller
 $ make devstack r=install s=compute
 
+or
+$ make devstack r=install s=all
+```
+
+#### 1) Destroy OpenStack with Devstack by This Ansible Playbook
+```yaml
+
 $ make devstack r=uninstall s=compute
 $ make devstack r=uninstall s=controller
+
+or
+$ make devstack r=uninstall s=all
 ```
 
 
