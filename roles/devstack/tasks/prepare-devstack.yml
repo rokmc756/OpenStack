@@ -26,7 +26,7 @@
 
 
 - name: Enable Legacy Network
-  import_tasks: enable-legacy-network.yml
+  import_tasks: network/enable-legacy-network.yml
 
 
 #  No need due to RDO requires SELinux Permissive

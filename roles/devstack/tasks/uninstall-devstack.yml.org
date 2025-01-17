@@ -51,7 +51,7 @@
 
 
 - name: Disable Legacy Network
-  import_tasks: disable-legacy-network.yml
+  import_tasks: network/disable-legacy-network.yml
 
 
 - name: Uninstall Uncleaned Packages by Devstack
