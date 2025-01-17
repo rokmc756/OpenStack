@@ -21,13 +21,13 @@ Supported OS for ansible target host should be prepared with package repository 
 $ xcode-select --install
 $ brew install ansible
 $ brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
-```yaml
+```
 
 * Fedora/CentOS/RHEL, Ubuntu, OpenSUSE
 ```yaml
 $ yum install ansible
 $ apt install ansible
-```yaml
+```
 
 ## How to Deploy and Destroy OpenStack by Packstack or DevStack
 #### 1) Configure Variables and Inventory with Hostnames, IP Addresses, sudo Username and Password
@@ -46,15 +46,15 @@ ubt22-rdo01 ansible_ssh_host=192.168.1.171
 [compute]
 ubt22-rdo02 ansible_ssh_host=192.168.1.172
 ubt22-rdo03 ansible_ssh_host=192.168.1.173
-```yaml
+```
 
 ##### Configure Variables for Devstack
 ```yaml
-```!yaml
+```
 
 ##### Configure Global Variables
 ```yaml
-```yaml
+```
 
 
 #### 1) Deploy OpenStack by Devstack
@@ -74,7 +74,7 @@ $ make devstack r=install s=compute
 
 $ make devstack r=uninstall s=compute
 $ make devstack r=uninstall s=controller
-```yaml
+```
 
 
 #### 2) Deploy OpenStack with Packstack by This Ansible Playbook
@@ -114,7 +114,7 @@ rk9-node05 ansible_ssh_host=192.168.2.195
 
 [redis]
 rk9-node05 ansible_ssh_host=192.168.2.195
-```yaml
+```
 
 
 #### 2) Deploy OpenStack with Packstack by This Ansible Playbook
@@ -126,7 +126,7 @@ $ make packstack r=install s=osp
 
 or
 $ make packstack r=install s=all
-```yaml
+```
 
 
 #### 2) Destroy OpenStack with Packstack by This Ansible Playbook
@@ -136,7 +136,7 @@ $ make packstack r=delete s=swiftblc
 
 or
 $ make packstack r=uninstall s=all
-```yaml
+```
 
 
 ## Similar Playbook
