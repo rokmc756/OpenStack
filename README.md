@@ -41,12 +41,13 @@ remote_machine_password="changeme"
 ansible_python_interpreter=/usr/bin/python3
 
 [controller]
-ubt22-rdo01 ansible_ssh_host=192.168.1.171
+ubt24-node01 ansible_ssh_host=192.168.2.181
 
 [compute]
-ubt22-rdo02 ansible_ssh_host=192.168.1.172
-ubt22-rdo03 ansible_ssh_host=192.168.1.173
+ubt24-node02 ansible_ssh_host=192.168.2.182
+ubt24-node03 ansible_ssh_host=192.168.2.183
 ```
+
 
 ##### Configure Variables for Devstack
 ```yaml
@@ -57,9 +58,10 @@ ubt22-rdo03 ansible_ssh_host=192.168.1.173
 ```
 
 
+
 #### 1) Deploy OpenStack with Devstack by This Ansible Playbook
 ```yaml
-$ make prepare
+$ make devstack r=prepare s=env
 $ make devstack r=install s=controller
 $ make devstack r=install s=compute
 

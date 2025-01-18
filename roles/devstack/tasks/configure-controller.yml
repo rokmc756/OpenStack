@@ -1,0 +1,21 @@
+---
+- name: Check if the Devstack Config Already Exists
+  stat: path=/opt/stack/devstack/local.conf
+  register: check_devstack_dir
+- debug: msg={{ check_devstack_dir }}
+
+
+- name: Copy Local.conf for Controller Node
+  become_user: stack
+  template:
+    src: "{{ item }}.j2"
+    dest: "/opt/stack/devstack/local.conf"
+    mode: 0644
+  register: copy_local_conf
+  ignore_errors: true
+  with_items:
+    - "controller-local-ubt.conf"
+  when: check_devstack_dir.stat.exists != True
+- debug: msg={{ copy_local_conf }}
+  when: print_debug == true and check_devstack_dir.stat.exists != True
+

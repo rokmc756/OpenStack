@@ -6,7 +6,7 @@
 
 - name: Set Facts for Package Name and List and Network Range
   import_tasks: set-devstack-facts.yml
-  tags: prepare, install, uninstall, create, delete, deploy, destroy, config, deconfig, setup
+  tags: prepare, install, uninstall, create, delete, deploy, destroy, config, deconfig, exec
 
 
 - name: Prepare Devstack Environment
@@ -19,6 +19,18 @@
   import_tasks: get-devstack-git-sources.yml
   tags: setup, prepare, config, install
   when: ( source is defined and source == true ) or ( devstack_all is defined and devstack_all == true )
+
+
+- name: Configure Devstack Controller
+  import_tasks: configure-controller.yml
+  tags: config, setup
+  when: (( controller is defined and controller == true ) or ( devstack_all is defined and devstack_all == true )) and inventory_hostname in groups['controller']
+
+
+- name: Configure Devstack Compute
+  import_tasks: configure-compute.yml
+  tags: config, setup
+  when: (( compute is defined and compute == true ) or ( devstack_all is defined and devstack_all == true )) and inventory_hostname in groups['compute']
 
 
 - name: Install Devstack Controller
@@ -43,4 +55,16 @@
   import_tasks: uninstall-devstack.yml
   tags: uninstall, destroy
   when: (( osp is defined and osp == true ) or ( devstack_all is defined and devstack_all == true ))
+
+
+- name: Disable Zabbly Repo
+  import_tasks: disable-zabbly-repo.yaml
+  tags: disable, delete
+  when: ( repo is defined and repo == true )
+
+
+- name: Reboot Devstack Hosts
+  import_tasks: reboot-hosts.yml
+  tags: exec
+  when: ( reboot is defined and reboot == true )
 

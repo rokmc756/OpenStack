@@ -59,6 +59,17 @@
     executable: /bin/bash
 
 
+- name: Update Caches for APT Packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400   # One day
+    upgrade: yes
+  register: update_apt_cache
+  until: update_apt_cache is succeeded
+  retries: 20
+  delay: 20
+
+
 - name: Reboot Required
   shell: ( /bin/sleep 5; /sbin/shutdown -r now "Ansible updates triggered" ) &
   ignore_errors: true

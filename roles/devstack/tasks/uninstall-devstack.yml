@@ -5,7 +5,7 @@
     ./unstack.sh
   register: uninstall_devstack
   until: uninstall_devstack is succeeded
-  retries: 10
+  retries: 5
   delay: 30
   ignore_errors: true
   args:
@@ -21,7 +21,7 @@
   register: clean_devstack
   ignore_errors: true
   until: clean_devstack is succeeded
-  retries: 10
+  retries: 5
   delay: 30
   args:
     chdir: /opt/stack/devstack

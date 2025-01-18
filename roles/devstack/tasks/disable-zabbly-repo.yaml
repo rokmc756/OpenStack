@@ -1,0 +1,40 @@
+---
+- name: Delete Zabbly Repository Config and Key
+  file:
+    path: "{{ item }}"
+    state: absent
+  register: delete_zabbly_config
+  ignore_errors: true
+  with_items:
+    - "/etc/apt/sources.list.d/zabbly-incus-lts-6.0.sources"
+    - "/etc/apt/keyrings/zabbly.asc"
+- debug: msg={{ delete_zabbly_config }}
+  when: print_debug == true
+
+
+- name: Delete Zabbly APT Key Directory
+  file:
+    path: "{{ item }}"
+    state: absent
+  register: delete_zabbly_apt_key_dir
+  ignore_errors: true
+  with_items:
+    - "/etc/apt/keyrings"
+- debug: msg={{ delete_zabbly_apt_key_dir }}
+  when: print_debug == true
+
+
+- name: Apply New Repository Changes
+  systemd:
+    daemon_reload: true
+
+
+- name: Update Caches for APT Packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+  register: update_apt_cache
+  until: update_apt_cache is succeeded
+  retries: 20
+  delay: 20
+
